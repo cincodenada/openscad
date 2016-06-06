@@ -71,9 +71,11 @@ public:
 #ifdef USE_QOPENGLWIDGET
 	inline QImage grabFrameBuffer() { return grabFramebuffer(); }
 #endif
+  int last_pick_id;
 private:
 	void init();
 
+	int drag_axis;
 	bool mouse_drag_active;
 	QPoint last_mouse;
 	QImage frame; // Used by grabFrame() and save()
@@ -99,4 +101,5 @@ private slots:
 signals:
 	void doAnimateUpdate();
 	void pickedObject(int);
+	void dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers);
 };

@@ -30,6 +30,8 @@
 
 shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 {
+  selected.reset();
+  selectedIndex = -1;
 	Traverser evaluate(*this, node, Traverser::PRE_AND_POSTFIX);
 	evaluate.execute();
 	
@@ -142,6 +144,12 @@ void CSGTreeEvaluator::applyToChildren(State &state, const AbstractNode &node, O
 	        && cursor_column <= loc.last_column));
 		if (node.modinst->isBackground()) t1->setBackground(true);
 		if (node.modinst->isHighlight() || cursor_incl) t1->setHighlight(true);
+		if (cursor_incl)
+		{
+		  t1->setSelected(true);
+		  this->selected = t1;
+		  this->selectedIndex = node.index();
+		}
 	}
 	this->stored_term[node.index()] = t1;
 }
@@ -207,6 +215,12 @@ shared_ptr<CSGNode> CSGTreeEvaluator::evaluateCSGNodeFromGeometry(
 
 	if (modinst->isHighlight() || cursor_incl) t->setHighlight(true);
 	else if (modinst->isBackground()) t->setBackground(true);
+	if (cursor_incl)
+	{
+	  t->setSelected(true);
+	  this->selected = t;
+	  this->selectedIndex = node.index();
+	}
 	return t;
 }
 

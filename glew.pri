@@ -8,7 +8,7 @@ glew {
     QMAKE_LIBDIR += $$GLEW_DIR/lib64
   }
 
-  unix:LIBS += -lGLEW
+  unix:LIBS += -lGLEW -lglut
   CONFIG(mingw-cross-env): {
     !CONFIG(mingw-cross-env-shared) {
       DEFINES += GLEW_STATIC

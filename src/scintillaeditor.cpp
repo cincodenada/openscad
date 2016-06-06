@@ -772,8 +772,8 @@ bool ScintillaEditor::modifyNumber(int key)
 QPoint ScintillaEditor::cursorPosition()
 {
   int x, y;
-  qsci->getCursorPosition(&x, &y);
-  return QPoint(x, y);
+  qsci->getCursorPosition(&x, &y); // line, index
+  return QPoint(y, x);
 }
 
 void ScintillaEditor::setSelection(QRect r)

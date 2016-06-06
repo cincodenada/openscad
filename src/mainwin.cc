@@ -122,6 +122,7 @@
 
 #include "boosty.h"
 #include "FontCache.h"
+#include "transformnode.h"
 
 // Global application state
 unsigned int GuiLocker::gui_locked = 0;
@@ -563,6 +564,8 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->consoleDock, SIGNAL(topLevelChanged(bool)), this, SLOT(consoleTopLevelChanged(bool)));
 
 	connect(this->qglview, SIGNAL(pickedObject(int)), this, SLOT(pickedObject(int)));
+	connect(this->qglview, SIGNAL(dragObject(int, int, double, double, int, int)),
+	        this, SLOT(dragObject(int, int, double, double, int, int)));
 	// display this window and check for OpenGL 2.0 (OpenCSG) support
 	viewModeThrownTogether();
 	show();
@@ -722,7 +725,7 @@ void MainWindow::report_func(const class AbstractNode*, void *vp, int mark)
 	}
 
 	// FIXME: Check if cancel was requested by e.g. Application quit
-	if (thisp->progresswidget->wasCanceled()) throw ProgressCancelException();
+	if (thisp->progresswidget && thisp->progresswidget->wasCanceled()) throw ProgressCancelException();
 }
 
 /*!
@@ -1104,16 +1107,18 @@ void MainWindow::instantiateRoot()
 	Generates CSG tree for OpenCSG evaluation.
 	Assumes that the design has been parsed and evaluated (this->root_node is set)
 */
-void MainWindow::compileCSG(bool procevents)
+void MainWindow::compileCSG(bool procevents, bool quiet)
 {
 	assert(this->root_node);
 	PRINT("Compiling design (CSG Products generation)...");
 	if (procevents) QApplication::processEvents();
 
 	// Main CSG evaluation
-	this->progresswidget = new ProgressWidget(this);
-	connect(this->progresswidget, SIGNAL(requestShow()), this, SLOT(showProgress()));
-
+	if (!quiet)
+	{
+	  this->progresswidget = new ProgressWidget(this);
+	  connect(this->progresswidget, SIGNAL(requestShow()), this, SLOT(showProgress()));
+	}
 #ifdef ENABLE_CGAL
 		GeometryEvaluator geomevaluator(this->tree);
 #else
@@ -1125,10 +1130,10 @@ void MainWindow::compileCSG(bool procevents)
 		  cursor = this->editor->cursorPosition();
 		else
 		  cursor = QPoint(-1, -1);
-		CSGTreeEvaluator csgrenderer(this->tree, &geomevaluator, cursor.x()+1, cursor.y()+1);
+		CSGTreeEvaluator csgrenderer(this->tree, &geomevaluator, cursor.y()+1, cursor.x()+1);
 #endif
-
-	progress_report_prep(this->root_node, report_func, this);
+  if (!quiet)
+	  progress_report_prep(this->root_node, report_func, this);
 	try {
 #ifdef ENABLE_OPENCSG
 		if (procevents) QApplication::processEvents();
@@ -1143,8 +1148,11 @@ void MainWindow::compileCSG(bool procevents)
 	catch (const ProgressCancelException &e) {
 		PRINT("CSG generation cancelled.");
 	}
-	progress_report_fin();
-	updateStatusBar(NULL);
+	if (!quiet)
+	{
+	  progress_report_fin();
+	  updateStatusBar(NULL);
+	}
 
 	PRINT("Compiling design (CSG Products normalization)...");
 	if (procevents) QApplication::processEvents();
@@ -1208,7 +1216,10 @@ void MainWindow::compileCSG(bool procevents)
 		this->opencsgRenderer = new OpenCSGRenderer(this->root_products,
 																								this->highlights_products,
 																								this->background_products,
-																								this->qglview->shaderinfo);
+																								this->qglview->shaderinfo,
+																								csgrenderer.selected);
+		std::cerr << "set last_pick_id " << csgrenderer.selectedIndex << std::endl;
+		qglview->last_pick_id = csgrenderer.selectedIndex;
 	}
 #endif
 	this->thrownTogetherRenderer = new ThrownTogetherRenderer(this->root_products,
@@ -2722,7 +2733,7 @@ void MainWindow::setContentsChanged()
 	this->contentschanged = true;
 }
 
-static AbstractNode* find_by_id(AbstractNode* n, int id)
+static AbstractNode* find_by_id(AbstractNode* n, int id, std::vector<AbstractNode*>& stack)
 {
 	if (n->index() == id)
 		return n;
@@ -2730,19 +2741,102 @@ static AbstractNode* find_by_id(AbstractNode* n, int id)
 	for (std::vector<AbstractNode*>::const_iterator it = children.begin();
 			 it != children.end(); ++it)
 	{
-		AbstractNode* res = find_by_id(*it, id);
+	  stack.push_back(*it);
+		AbstractNode* res = find_by_id(*it, id, stack);
 		if (res)
 			return res;
+		stack.pop_back();
 	}
 	return 0;
 }
 
+
+QString updateTranslate(QString text, double dx, double dy, double dz)
+{
+  QRegExp qr("\\[([^,]*),([^,]*),([^\\]]*)\\]");
+  int p = qr.indexIn(text);
+  if (p == -1)
+    return text;
+  double diffs[3] = {dx, dy, dz};
+  QString reps[3];
+  for (int i=0; i<3; ++i)
+    reps[i] = qr.cap(i+1);
+  for (int i=0; i<3; ++i)
+  {
+    if (diffs[i] != 0)
+    {
+      QString s = qr.cap(1+i);
+      std::cerr << s.toAscii().constData() << std::endl;
+      QRegExp plus("\\s*\\+\\s*(-?[0-9.]+)$");
+      int p = plus.indexIn(s);
+      if (p == -1)
+        reps[i] += " + " + QString().setNum(diffs[i]);
+      else
+      {
+        double v = plus.cap(1).toDouble() + diffs[i];
+        reps[i] = s.mid(0, p) + " + " + QString().setNum(v);
+      }
+    }
+  }
+  return text.mid(0, p) + "[" + reps[0] + "," + reps[1] + "," + reps[2] + "]"
+    + text.mid(p+qr.cap(0).length());
+}
+
+void MainWindow::dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers)
+{
+  std::cerr << "drag " << id << " " << axis << " " << dx <<" " << dy << std::endl;
+  std::vector<AbstractNode*> stack;
+	AbstractNode* node = find_by_id(absolute_root_node, id, stack);
+	for (auto const& n: stack)
+	  std::cerr << n->name() << '(' << n->index() << ')' << " -> ";
+	std::cerr << std::endl;
+	AbstractNode* trans = nullptr;
+	for (int i = stack.size()-1; i>= 0; --i)
+	{
+	  if (stack[i]->name() == "transform")
+	  {
+	    trans = stack[i];
+	    break;
+	  }
+	}
+	if (trans)
+	{
+	  QPoint prevCursor = editor->cursorPosition();
+	  std::cerr << "pc in " << prevCursor.x() << " " << prevCursor.y() << std::endl;
+	  Location loc = trans->modinst->getLocation();
+	  editor->setSelection(QRect(QPoint(loc.first_column-1, loc.first_line-1),
+	                             QPoint(loc.last_column-1, loc.last_line-1)));
+	  QString prev = editor->selectedText();
+	  QString res = updateTranslate(prev,
+	    (dx + dy) * (axis == 0 ? 1 : 0),
+	    (dx + dy) * (axis == 1 ? 1 : 0),
+	    (dx + dy) * (axis == 2 ? 1 : 0));
+	  editor->replaceSelectedText(res);
+	  int delta = res.length() - prev.length();
+	  const_cast<ModuleInstantiation*>(trans->modinst)->setLocation(loc.first_line, loc.first_column, loc.last_line, loc.last_column + delta);
+	  TransformNode* t = dynamic_cast<TransformNode*>(trans);
+	  if (t)
+	    t->matrix.translate(Vector3d(
+	      (dx + dy) * (axis == 0 ? 1 : 0),
+	      (dx + dy) * (axis == 1 ? 1 : 0),
+	      (dx + dy) * (axis == 2 ? 1 : 0)));
+	  editor->setSelection(QRect(prevCursor, prevCursor));
+	  prevCursor = editor->cursorPosition();
+	  std::cerr << "pc out " << prevCursor.x() << " " << prevCursor.y() << std::endl;
+	  if (this->root_node) compileCSG(false, true);
+	  viewModePreview();
+	}
+}
+
 void MainWindow::pickedObject(int id)
 {
-	AbstractNode* node = find_by_id(absolute_root_node, id);
+  std::vector<AbstractNode*> stack;
+	AbstractNode* node = find_by_id(absolute_root_node, id, stack);
 	if (!node || !node->modinst)
 		return;
+
 	Location loc = node->modinst->getLocation();
-	editor->setSelection(QRect(QPoint(loc.first_column-1, loc.first_line-1),
-														 QPoint(loc.last_column-1, loc.last_line-1)));
+
+  editor->setSelection(QRect(QPoint(loc.first_column-1, loc.first_line-1),
+													 QPoint(loc.last_column-1, loc.last_line-1)));
 }

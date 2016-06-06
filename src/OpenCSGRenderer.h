@@ -13,7 +13,8 @@ public:
 	OpenCSGRenderer(shared_ptr<class CSGProducts> root_products,
 									shared_ptr<CSGProducts> highlights_products,
 									shared_ptr<CSGProducts> background_products,
-									GLint *shaderinfo);
+									GLint *shaderinfo,
+									shared_ptr<CSGNode> selected = nullptr);
 	virtual void draw(bool showfaces, bool showedges) const;
 	virtual BoundingBox getBoundingBox() const;
 	void setPicking(bool p) { this->picking = p;}
@@ -27,6 +28,7 @@ private:
 	shared_ptr<CSGProducts> root_products;
 	shared_ptr<CSGProducts> highlights_products;
 	shared_ptr<CSGProducts> background_products;
+	shared_ptr<CSGNode> selected;
 	GLint *shaderinfo;
 	bool picking;
 };

@@ -70,6 +70,7 @@ void QGLView::init()
 
   this->mouse_drag_active = false;
   this->statusLabel = NULL;
+  this->drag_axis = -1;
 
   setMouseTracking(true);
 
@@ -186,25 +187,31 @@ void QGLView::paintGL()
 void QGLView::mousePressEvent(QMouseEvent *event)
 {
 #ifdef ENABLE_OPENCSG
-  if (event->modifiers() & Qt::ControlModifier)
+  OpenCSGRenderer* o = dynamic_cast<OpenCSGRenderer*>(this->getRenderer());
+  if (o)
   {
-    OpenCSGRenderer* o = dynamic_cast<OpenCSGRenderer*>(this->getRenderer());
-    if (o)
+    o->setPicking(true);
+    paintGL();
+    o->setPicking(false);
+    int viewport[4];
+    glGetIntegerv( GL_VIEWPORT, viewport);
+    double x = event->pos().x() * this->getDPI();
+    double y = viewport[3] - event->pos().y() * this->getDPI();
+    unsigned int hit = 0;
+    glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &hit);
+    // extract the 6 bits per byte that form the value
+    hit = ((hit & 0xFC) >> 2) + ((hit & 0xFC00) >> 4) + ((hit & 0xFC0000) >> 6);
+    std::cerr << hit << std::endl;
+    if (event->modifiers() & Qt::ControlModifier && hit < 65000)
     {
-      o->setPicking(true);
-      paintGL();
-      o->setPicking(false);
-      int viewport[4];
-      glGetIntegerv( GL_VIEWPORT, viewport);
-      double x = event->pos().x() * this->getDPI();
-      double y = viewport[3] - event->pos().y() * this->getDPI();
-      unsigned int hit = 0;
-      glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &hit);
-      // extract the 6 bits per byte that form the value
-      hit = ((hit & 0xFC) >> 2) + ((hit & 0xFC00) >> 4) + ((hit & 0xFC0000) >> 6);
+      last_pick_id = hit;
       emit pickedObject(hit);
       return;
     }
+    if (hit >= 65000 && hit <65003)
+      drag_axis = hit - 65000;
+    else
+      drag_axis = -1;
   }
 #endif
   mouse_drag_active = true;
@@ -261,6 +268,13 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
   double dx = (this_mouse.x()-last_mouse.x()) * 0.7;
   double dy = (this_mouse.y()-last_mouse.y()) * 0.7;
   if (mouse_drag_active) {
+    if (drag_axis != -1)
+    {
+      emit dragObject(last_pick_id, drag_axis, dx, dy, event->buttons(), event->modifiers());
+      last_mouse = this_mouse;
+      updateGL();
+      return;
+    }
     if (event->buttons() & Qt::LeftButton
 #ifdef Q_OS_MAC
         && !(event->modifiers() & Qt::MetaModifier)
@@ -334,6 +348,7 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
 void QGLView::mouseReleaseEvent(QMouseEvent*)
 {
   mouse_drag_active = false;
+  drag_axis = -1;
   releaseMouse();
 }
 

@@ -33,6 +33,8 @@
 #ifdef ENABLE_OPENCSG
 #  include <opencsg.h>
 
+#include <GL/glut.h>
+
 class OpenCSGPrim : public OpenCSG::Primitive
 {
 public:
@@ -51,6 +53,13 @@ public:
 
 #endif
 
+class PushMatrix
+{
+public:
+  PushMatrix() { glPushMatrix();}
+  ~PushMatrix() { glPopMatrix();}
+};
+
 static int object_id(std::string const& label)
 {
   size_t pos = label.find_first_of("0123456789");
@@ -68,15 +77,54 @@ static void gl_pick_color(unsigned int id)
             1);
 }
 
+static const int handle_pick_id = 65000;
+
+
+static void drawHandles(bool picking)
+{
+  glDisable(GL_LIGHTING);
+  double w = 0.2;
+  double l = 3;
+  if (picking)
+    gl_pick_color(handle_pick_id);
+  else
+    glColor4f(1, 0, 0, 1);
+  {
+    PushMatrix pm2;
+    glScalef(l, w, w);
+    glutSolidCube(1.0);
+  }
+  if (picking)
+    gl_pick_color(handle_pick_id+1);
+  else
+    glColor3f(0, 1, 0);
+  {
+    PushMatrix pm2;
+    glScalef(w, l, w);
+    glutSolidCube(1.0);
+  }
+  if (picking)
+    gl_pick_color(handle_pick_id+2);
+  else
+    glColor3f(0, 0, 1);
+  {
+    PushMatrix pm2;
+    glScalef(w, w, l);
+    glutSolidCube(1.0);
+  }
+  glEnable(GL_LIGHTING);
+}
 
 OpenCSGRenderer::OpenCSGRenderer(shared_ptr<CSGProducts> root_products,
 																 shared_ptr<CSGProducts> highlights_products,
 																 shared_ptr<CSGProducts> background_products,
-																 GLint *shaderinfo)
+																 GLint *shaderinfo,
+																 shared_ptr<CSGNode> selected)
 	: root_products(root_products), 
 		highlights_products(highlights_products), 
 		background_products(background_products), shaderinfo(shaderinfo),
-		picking(false)
+		picking(false),
+		selected(selected)
 {
 }
 
@@ -92,6 +140,16 @@ void OpenCSGRenderer::draw(bool /*showfaces*/, bool showedges) const
 	}
 	if (this->highlights_products) {
 		renderCSGProducts(*this->highlights_products, showedges ? shaderinfo : NULL, true, false);
+	}
+	if (this->selected)
+	{
+	  auto const& bb = this->selected->getBoundingBox();
+	  auto c = bb.center();
+	  auto l = bb.sizes();
+	  PushMatrix pm;
+	  glTranslatef(c.x(), c.y(), c.z());
+	  glScalef(l.x(), l.y(), l.z());
+	  drawHandles(picking);
 	}
 }
 
@@ -145,6 +203,10 @@ void OpenCSGRenderer::renderCSGProducts(const CSGProducts &products, GLint *shad
 			} else {
 				colormode = COLORMODE_MATERIAL;
 			}
+			glPushMatrix();
+			glMultMatrixd(csgobj.leaf->matrix.data());
+			if (csgobj.leaf->isSelected())
+			  drawHandles(this->picking);
 			if (!this->picking)
 			  setColor(colormode, c.data(), shaderinfo);
 			else
@@ -152,8 +214,6 @@ void OpenCSGRenderer::renderCSGProducts(const CSGProducts &products, GLint *shad
 			  glUseProgram(0);
 			  gl_pick_color(object_id(csgobj.leaf->label));
 			}
-			glPushMatrix();
-			glMultMatrixd(csgobj.leaf->matrix.data());
 			render_surface(csgobj.leaf->geom, csgmode, csgobj.leaf->matrix, shaderinfo);
 			glPopMatrix();
 		}
@@ -172,6 +232,10 @@ void OpenCSGRenderer::renderCSGProducts(const CSGProducts &products, GLint *shad
 			} else {
 				colormode = COLORMODE_CUTOUT;
 			}
+			glPushMatrix();
+			glMultMatrixd(csgobj.leaf->matrix.data());
+			if (csgobj.leaf->isSelected())
+			  drawHandles(this->picking);
 			if (!this->picking)
 			  setColor(colormode, c.data(), shaderinfo);
 			else
@@ -179,8 +243,6 @@ void OpenCSGRenderer::renderCSGProducts(const CSGProducts &products, GLint *shad
 			  glUseProgram(0);
 			  gl_pick_color(object_id(csgobj.leaf->label));
 			}
-			glPushMatrix();
-			glMultMatrixd(csgobj.leaf->matrix.data());
 			render_surface(csgobj.leaf->geom, csgmode, csgobj.leaf->matrix, shaderinfo);
 			glPopMatrix();
 		}

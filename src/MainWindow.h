@@ -102,7 +102,7 @@ private:
 	void compileTopLevelDocument();
         void updateCompileResult();
 	void compile(bool reload, bool forcedone = false);
-	void compileCSG(bool procevents);
+	void compileCSG(bool procevents, bool quiet = false);
 	bool maybeSave();
         void saveError(const QIODevice &file, const std::string &msg);
 	bool checkEditorModified();
@@ -247,6 +247,7 @@ public slots:
 	void autoReloadSet(bool);
 	void setContentsChanged();
 	void pickedObject(int);
+	void dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers);
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);
 	static bool mdiMode;

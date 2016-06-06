@@ -38,6 +38,8 @@ public:
 		return this->backgroundNodes;
 	}
 
+	shared_ptr<class CSGNode> selected;
+	int selectedIndex;
 private:
   void addToParent(const State &state, const AbstractNode &node);
 	void applyToChildren(State &state, const AbstractNode &node, OpenSCADOperator op);

@@ -76,6 +76,8 @@
 #define snprintf _snprintf
 #endif
 
+#include <GL/glut.h>
+
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 namespace Render { enum type { GEOMETRY, CGAL, OPENCSG, THROWNTOGETHER }; };
@@ -765,6 +767,7 @@ int gui(const vector<string> &inputFiles, const fs::path &original_path, int arg
 
 int main(int argc, char **argv)
 {
+  glutInit(&argc, argv);
 	int rc = 0;
 	bool isGuiLaunched = getenv("GUI_LAUNCHED") != 0;
 	StackCheck::inst()->init();

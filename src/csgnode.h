@@ -15,7 +15,7 @@ public:
 		FLAG_HIGHLIGHT = 0x02
 	};
 
-	CSGNode(Flag flags = FLAG_NONE) : flags(flags) {}
+	CSGNode(Flag flags = FLAG_NONE) : flags(flags), selected(false) {}
 	virtual ~CSGNode() {}
 	virtual std::string dump() = 0;
 
@@ -25,13 +25,14 @@ public:
 	bool isBackground() const { return this->flags & FLAG_BACKGROUND; }
 	void setHighlight(bool on) { on ? this->flags |= FLAG_HIGHLIGHT : this->flags &= ~FLAG_HIGHLIGHT; }
 	void setBackground(bool on) { on ? this->flags |= FLAG_BACKGROUND : this->flags &= ~FLAG_BACKGROUND; }
-
+	bool isSelected() const { return selected;}
+	void setSelected(bool on) { selected = on;}
 protected:
 	virtual void initBoundingBox() = 0;
 
 	BoundingBox bbox;
 	unsigned int flags;
-
+	bool selected;
 	friend class CSGProducts;
 };
 
