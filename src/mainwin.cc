@@ -193,6 +193,7 @@ MainWindow::MainWindow(const QString &filename)
 #ifdef USE_SCINTILLA_EDITOR
 	if (useScintilla) {
 		 editor = new ScintillaEditor(editorDockContents);
+		 connect(editor, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(cursorPositionChanged(int, int)));
 	}
 	else
 #endif
@@ -2774,7 +2775,7 @@ QString updateTranslate(QString text, double dx, double dy, double dz)
       else
       {
         double v = plus.cap(1).toDouble() + diffs[i];
-        reps[i] = s.mid(0, p) + " + " + QString().setNum(v);
+        reps[i] = s.mid(0, p) + " + " + QString().setNum(v, 'f');
       }
     }
   }
@@ -2839,4 +2840,13 @@ void MainWindow::pickedObject(int id)
 
   editor->setSelection(QRect(QPoint(loc.first_column-1, loc.first_line-1),
 													 QPoint(loc.last_column-1, loc.last_line-1)));
+}
+
+void MainWindow::cursorPositionChanged(int, int)
+{
+  if (this->root_node)
+  {
+    compileCSG(false, true);
+    viewModePreview();
+  }
 }

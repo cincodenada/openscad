@@ -150,6 +150,7 @@ ScintillaEditor::ScintillaEditor(QWidget *parent) : EditorInterface(parent)
 
 	connect(qsci, SIGNAL(textChanged()), this, SIGNAL(contentsChanged()));
 	connect(qsci, SIGNAL(modificationChanged(bool)), this, SIGNAL(modificationChanged(bool)));
+	connect(qsci, SIGNAL(cursorPositionChanged(int, int)), this, SIGNAL(cursorPositionChanged(int, int)));
 	qsci->installEventFilter(this);
 }
 

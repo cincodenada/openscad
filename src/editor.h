@@ -28,7 +28,8 @@ public:
 
 signals:
   void contentsChanged();
-  void modificationChanged(bool);												
+  void modificationChanged(bool);
+  void cursorPositionChanged(int line, int index);
 
 public slots:
 	virtual void zoomIn() = 0;

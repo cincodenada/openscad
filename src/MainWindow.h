@@ -248,6 +248,7 @@ public slots:
 	void setContentsChanged();
 	void pickedObject(int);
 	void dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers);
+	void cursorPositionChanged(int line, int index);
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);
 	static bool mdiMode;
