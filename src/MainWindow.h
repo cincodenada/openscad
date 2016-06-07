@@ -196,6 +196,7 @@ public:
 	void setCurrentOutput();
 	void clearCurrentOutput();
   bool isEmpty();
+  bool changeSelection(TreeMove m);
 
 public slots:
 	void openFile(const QString &filename);
@@ -249,6 +250,7 @@ public slots:
 	void pickedObject(int);
 	void dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers);
 	void cursorPositionChanged(int line, int index);
+	void glviewKeyPress(int key, Qt::KeyboardModifiers mods);
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);
 	static bool mdiMode;

@@ -85,6 +85,7 @@ private:
 	void mouseMoveEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseDoubleClickEvent(QMouseEvent *event);
+	void keyPressEvent(QKeyEvent *event) override;
 
 	void initializeGL();
 	void resizeGL(int w, int h);
@@ -102,4 +103,5 @@ signals:
 	void doAnimateUpdate();
 	void pickedObject(int);
 	void dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers);
+	void keyPress(int key, Qt::KeyboardModifiers mods);
 };

@@ -46,3 +46,11 @@ extern std::string openscad_versionnumber;
 extern std::string openscad_displayversionnumber;
 // Version used for detailed display
 extern std::string openscad_detailedversionnumber;
+
+enum class TreeMove
+{
+  parent,
+  child,
+  nextSibling,
+  prevSibling
+};

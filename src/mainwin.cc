@@ -567,6 +567,7 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->qglview, SIGNAL(pickedObject(int)), this, SLOT(pickedObject(int)));
 	connect(this->qglview, SIGNAL(dragObject(int, int, double, double, int, int)),
 	        this, SLOT(dragObject(int, int, double, double, int, int)));
+	connect(this->qglview, SIGNAL(keyPress(int, Qt::KeyboardModifiers)), this, SLOT(glviewKeyPress(int, Qt::KeyboardModifiers)));
 	// display this window and check for OpenGL 2.0 (OpenCSG) support
 	viewModeThrownTogether();
 	show();
@@ -2840,6 +2841,70 @@ void MainWindow::pickedObject(int id)
 
   editor->setSelection(QRect(QPoint(loc.first_column-1, loc.first_line-1),
 													 QPoint(loc.last_column-1, loc.last_line-1)));
+}
+
+void MainWindow::glviewKeyPress(int key, Qt::KeyboardModifiers mods)
+{
+  std::cerr << "key " << key << " " << (int)mods << std::endl;
+  if (key == Qt::Key_Up)
+    changeSelection(TreeMove::parent);
+  else if (key == Qt::Key_Down)
+    changeSelection(TreeMove::child);
+  else if (key == Qt::Key_Left)
+    changeSelection(TreeMove::prevSibling);
+  else if (key == Qt::Key_Right)
+    changeSelection(TreeMove::nextSibling);
+}
+
+bool MainWindow::changeSelection(TreeMove m)
+{
+  std::cerr << "CC " << (int)m << std::endl;
+  std::vector<AbstractNode*> stack;
+	AbstractNode* node = find_by_id(absolute_root_node, qglview->last_pick_id, stack);
+	if (!node || !node->modinst)
+	{
+	  std::cerr << "node " << qglview->last_pick_id << " not found!" << std::endl;
+		return false;
+	}
+	AbstractNode* target = nullptr;
+	switch (m)
+	{
+	case TreeMove::parent:
+	  if (stack.size() > 1)
+	    target = stack[stack.size()-2];
+	  break;
+	case TreeMove::child:
+	  {
+	  auto const& c = node->getChildren();
+	  if (!c.empty())
+	    target = c.front();
+	  }
+	  break;
+	case TreeMove::nextSibling:
+	case TreeMove::prevSibling:
+	  if (stack.size() > 1)
+	  {
+	    AbstractNode* parent = stack[stack.size()-2];
+	    auto const& c = parent->getChildren();
+	    auto it = std::find(c.begin(), c.end(), node);
+	    if (it != c.end())
+	    {
+	      auto index = it - c.begin();
+	      target = c[ (c.size() + index + ((m == TreeMove::nextSibling) ? 1 : -1))
+	      % c.size()];
+	    }
+	  }
+	  break;
+	}
+	if (target && target->modinst)
+	{
+	  Location loc = target->modinst->getLocation();
+
+	  editor->setSelection(QRect(QPoint(loc.first_column-1, loc.first_line-1),
+	                             QPoint(loc.last_column-1, loc.last_line-1)));
+	  // this will probably trigger a cursorPositionChanged so wait for it
+	}
+	return target && target->modinst;
 }
 
 void MainWindow::cursorPositionChanged(int, int)

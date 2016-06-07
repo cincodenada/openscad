@@ -73,7 +73,7 @@ void QGLView::init()
   this->drag_axis = -1;
 
   setMouseTracking(true);
-
+  setFocusPolicy(Qt::ClickFocus);
 
 
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
@@ -182,6 +182,12 @@ void QGLView::paintGL()
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
   if (running_under_wine) swapBuffers();
 #endif
+}
+
+void QGLView::keyPressEvent(QKeyEvent *event)
+{
+  std::cerr << "key " << std::endl;
+  emit keyPress(event->key(), event->modifiers());
 }
 
 void QGLView::mousePressEvent(QMouseEvent *event)
