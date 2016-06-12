@@ -196,7 +196,7 @@ public:
 	void setCurrentOutput();
 	void clearCurrentOutput();
   bool isEmpty();
-  bool changeSelection(TreeMove m);
+  bool changeSelection(TreeMove m, bool skip_transforms = false);
 
 public slots:
 	void openFile(const QString &filename);

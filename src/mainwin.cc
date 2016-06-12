@@ -2846,17 +2846,18 @@ void MainWindow::pickedObject(int id)
 void MainWindow::glviewKeyPress(int key, Qt::KeyboardModifiers mods)
 {
   std::cerr << "key " << key << " " << (int)mods << std::endl;
+  bool skip = true;
   if (key == Qt::Key_Up)
-    changeSelection(TreeMove::parent);
+    changeSelection(TreeMove::parent, skip);
   else if (key == Qt::Key_Down)
-    changeSelection(TreeMove::child);
+    changeSelection(TreeMove::child, skip);
   else if (key == Qt::Key_Left)
-    changeSelection(TreeMove::prevSibling);
+    changeSelection(TreeMove::prevSibling, skip);
   else if (key == Qt::Key_Right)
-    changeSelection(TreeMove::nextSibling);
+    changeSelection(TreeMove::nextSibling, skip);
 }
 
-bool MainWindow::changeSelection(TreeMove m)
+bool MainWindow::changeSelection(TreeMove m, bool skip_transforms)
 {
   std::cerr << "CC " << (int)m << std::endl;
   std::vector<AbstractNode*> stack;
@@ -2872,12 +2873,31 @@ bool MainWindow::changeSelection(TreeMove m)
 	case TreeMove::parent:
 	  if (stack.size() > 1)
 	    target = stack[stack.size()-2];
+	  if (skip_transforms)
+	  {
+	    int p = stack.size()-2;
+	    while (p>0 && target)
+	    {
+	      std::cerr << "tname " << target->name() << std::endl;
+	      if (target->name() == "transform" || target->name() == "color")
+	        --p;
+	      else
+	        break;
+	      target = stack[p];
+	    }
+	  }
 	  break;
 	case TreeMove::child:
 	  {
 	  auto const& c = node->getChildren();
 	  if (!c.empty())
 	    target = c.front();
+	  if (skip_transforms && target)
+	  {
+	    while ((target->name() == "transform" || target->name() == "color")
+	      && target->getChildren().size() == 1)
+	      target = target->getChildren().front();
+	  }
 	  }
 	  break;
 	case TreeMove::nextSibling:
@@ -2885,13 +2905,29 @@ bool MainWindow::changeSelection(TreeMove m)
 	  if (stack.size() > 1)
 	  {
 	    AbstractNode* parent = stack[stack.size()-2];
+	    AbstractNode* self = node;
+	    if (skip_transforms)
+	    {
+	      int p = stack.size()-2;
+	      while (p>0 && (parent->name() == "transform" || parent->name() == "color"))
+	      {
+	        self = parent;
+	        parent = stack[--p];
+	      }
+	    }
 	    auto const& c = parent->getChildren();
-	    auto it = std::find(c.begin(), c.end(), node);
+	    auto it = std::find(c.begin(), c.end(), self);
 	    if (it != c.end())
 	    {
 	      auto index = it - c.begin();
 	      target = c[ (c.size() + index + ((m == TreeMove::nextSibling) ? 1 : -1))
 	      % c.size()];
+	      if (skip_transforms)
+	      {
+	        while ((target->name() == "transform" || target->name() == "color")
+	          && target->getChildren().size() == 1)
+	        target = target->getChildren().front();
+	      }
 	    }
 	  }
 	  break;
