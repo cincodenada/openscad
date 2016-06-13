@@ -42,6 +42,7 @@ isEmpty(QT_VERSION) {
 # If VERSION is not set, populate VERSION, VERSION_YEAR, VERSION_MONTH from system date
 include(version.pri)
 
+DEFINES += CGAL_DISABLE_ROUNDING_MATH_CHECK
 debug: DEFINES += DEBUG
 
 TEMPLATE = app
