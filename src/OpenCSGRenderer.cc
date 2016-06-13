@@ -80,7 +80,7 @@ static void gl_pick_color(unsigned int id)
 static const int handle_pick_id = 65000;
 
 
-static void drawHandles(bool picking)
+static void drawHandles(bool picking, double x=1, double y=1, double z=1)
 {
   glDisable(GL_LIGHTING);
   double w = 0.2;
@@ -91,7 +91,7 @@ static void drawHandles(bool picking)
     glColor4f(1, 0, 0, 1);
   {
     PushMatrix pm2;
-    glScalef(l, w, w);
+    glScalef(x, w, w);
     glutSolidCube(1.0);
   }
   if (picking)
@@ -100,7 +100,7 @@ static void drawHandles(bool picking)
     glColor3f(0, 1, 0);
   {
     PushMatrix pm2;
-    glScalef(w, l, w);
+    glScalef(w, y, w);
     glutSolidCube(1.0);
   }
   if (picking)
@@ -109,7 +109,7 @@ static void drawHandles(bool picking)
     glColor3f(0, 0, 1);
   {
     PushMatrix pm2;
-    glScalef(w, w, l);
+    glScalef(w, w, z);
     glutSolidCube(1.0);
   }
   glEnable(GL_LIGHTING);
@@ -147,9 +147,10 @@ void OpenCSGRenderer::draw(bool /*showfaces*/, bool showedges) const
 	  auto c = bb.center();
 	  auto l = bb.sizes();
 	  PushMatrix pm;
-	  glTranslatef(c.x(), c.y(), c.z());
-	  glScalef(l.x(), l.y(), l.z());
-	  drawHandles(picking);
+	  glMultMatrixd(this->selected->matrix.data());
+	  //glTranslatef(c.x(), c.y(), c.z());
+	  //glScalef(l.x(), l.y(), l.z());
+	  drawHandles(picking, l.x()*1.3, l.y()*1.3, l.z()*1.3);
 	}
 }
 
@@ -205,8 +206,8 @@ void OpenCSGRenderer::renderCSGProducts(const CSGProducts &products, GLint *shad
 			}
 			glPushMatrix();
 			glMultMatrixd(csgobj.leaf->matrix.data());
-			if (csgobj.leaf->isSelected())
-			  drawHandles(this->picking);
+			//if (csgobj.leaf->isSelected())
+			//  drawHandles(this->picking);
 			if (!this->picking)
 			  setColor(colormode, c.data(), shaderinfo);
 			else
@@ -234,8 +235,8 @@ void OpenCSGRenderer::renderCSGProducts(const CSGProducts &products, GLint *shad
 			}
 			glPushMatrix();
 			glMultMatrixd(csgobj.leaf->matrix.data());
-			if (csgobj.leaf->isSelected())
-			  drawHandles(this->picking);
+			//if (csgobj.leaf->isSelected())
+			//  drawHandles(this->picking);
 			if (!this->picking)
 			  setColor(colormode, c.data(), shaderinfo);
 			else

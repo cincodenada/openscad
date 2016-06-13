@@ -91,6 +91,7 @@
 #include <QDockWidget>
 #include <QClipboard>
 #include <QDesktopWidget>
+#include <QMetaMethod>
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 1, 0))
 // Set dummy for Qt versions that do not have QSaveFile
@@ -896,7 +897,7 @@ void MainWindow::refreshDocument()
 /*!
 	compiles the design. Calls compileDone() if anything was compiled
 */
-void MainWindow::compile(bool reload, bool forcedone)
+void MainWindow::compile(bool reload, bool forcedone, bool dont_signal)
 {
 	bool shouldcompiletoplevel = false;
 	bool didcompile = false;
@@ -964,7 +965,8 @@ void MainWindow::compile(bool reload, bool forcedone)
 		}
 	}
 
-	compileDone(didcompile | forcedone);
+	if (!dont_signal)
+	  compileDone(didcompile | forcedone);
 }
 
 void MainWindow::waitAfterReload()
@@ -2785,50 +2787,179 @@ QString updateTranslate(QString text, double dx, double dy, double dz)
     + text.mid(p+qr.cap(0).length());
 }
 
+QString updateMove(QString text, int field, double delta)
+{
+  std::cerr << "TEXT: " << text.toAscii().constData() << std::endl;
+  QRegExp qr("\\(([^)]*)\\)");
+  int p = qr.indexIn(text);
+  if (p == -1)
+    return text;
+  std::cerr << "CAP: " << qr.cap(1).toAscii().constData() << std::endl;
+  QStringList fields = qr.cap(1).split(",");
+  std::cerr << "FIELD: " << fields.size() << std::endl;
+  if (fields.size() != 9)
+    return text;
+  QString s = fields[field];
+  s = s.trimmed();
+  bool ok;
+  double plainval = s.toDouble(&ok);
+  if (ok)
+  {
+    s.setNum(plainval + delta);
+  }
+  else
+  { // there is some other stuff in the string, like added constants maybe
+    QRegExp plus("\\s*\\+\\s*(-?[0-9.]+)$");
+    int p = plus.indexIn(s);
+    if (p != -1)
+    {
+      double v = plus.cap(1).toDouble() + delta;
+      s = s.mid(0, p) + " + " + QString().setNum(v, 'f');
+    }
+    else
+      s += " + " + QString().setNum(delta);
+  }
+  fields[field] = s;
+  return text.mid(0, p) + "(" + fields.join(",") + ")" + text.mid(p+qr.cap(0).length());
+}
+
+static const int move_stack_size = 8;
+AbstractNode* find_move_node(std::vector<AbstractNode*> const& stack)
+{
+  // we expect that in the stack:
+  //group move(17) -> transform scale(18) -> transform translate(19) -> transform rotate(20) -> group children(21) -> sphere sphere(22)
+  if (stack.size() < move_stack_size)
+    return nullptr;
+  if (stack[stack.size()-2]->name() != "group"
+    || stack[stack.size()-2]->modinst->name() != "children")
+    return nullptr;
+  if (stack[stack.size()-move_stack_size]->name() != "group"
+    || stack[stack.size()-move_stack_size]->modinst->name() != "move")
+    return nullptr;
+  return stack[stack.size()-move_stack_size];
+}
+
+void updateTreeTransform(std::vector<AbstractNode*> const& stack, int field, double val)
+{
+  // stack is scale translate rotate group object
+  // fields are translate rotate scale
+  if (field < 3)
+  {
+    AbstractNode* target = stack[stack.size()-move_stack_size + 2];
+    auto t = dynamic_cast<TransformNode*>(target);
+    if (!t)
+      return;
+    t->matrix.translate(Vector3d(
+      (field == 0) ? val : 0.0,
+      (field == 1) ? val : 0.0,
+      (field == 2) ? val : 0.0));
+  }
+  else if (field < 6)
+  { // rotate
+    val = val * M_PI / 180.0;
+    AbstractNode* target = stack[stack.size()-move_stack_size + 3 + (field-3)];
+    auto t = dynamic_cast<TransformNode*>(target);
+    if (!t)
+      return;
+    t->matrix.rotate(Eigen::AngleAxisd(val, Vector3d(
+      (field == 3) ? 1 : 0,
+      (field == 4) ? 1 : 0,
+      (field == 5) ? 1 : 0
+      )));
+  }
+  else
+  {
+    AbstractNode* target = stack[stack.size()-move_stack_size + 1];
+    auto t = dynamic_cast<TransformNode*>(target);
+    if (!t)
+      return;
+    t->matrix.data()[(field-6)*5] += val;
+    /*
+    t->matrix.scale(Vector3d(
+      (field == 6) ? val : 1.0,
+      (field == 7) ? val : 1.0,
+      (field == 8) ? val : 1.0));*/
+  }
+}
+
 void MainWindow::dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers)
 {
   std::cerr << "drag " << id << " " << axis << " " << dx <<" " << dy << std::endl;
   std::vector<AbstractNode*> stack;
 	AbstractNode* node = find_by_id(absolute_root_node, id, stack);
+	if (!node)
+	  return;
 	for (auto const& n: stack)
-	  std::cerr << n->name() << '(' << n->index() << ')' << " -> ";
+	  std::cerr << n->name()
+	  << ' ' <<(n->modinst ? n->modinst->name() : std::string("null"))
+	  << '(' << n->index() << ')' << " -> ";
 	std::cerr << std::endl;
-	AbstractNode* trans = nullptr;
-	for (int i = stack.size()-1; i>= 0; --i)
+	AbstractNode* move = find_move_node(stack);
+	if (!move)
 	{
-	  if (stack[i]->name() == "transform")
-	  {
-	    trans = stack[i];
-	    break;
-	  }
-	}
-	if (trans)
-	{
+	  // insert a move node
 	  QPoint prevCursor = editor->cursorPosition();
-	  std::cerr << "pc in " << prevCursor.x() << " " << prevCursor.y() << std::endl;
-	  Location loc = trans->modinst->getLocation();
-	  editor->setSelection(QRect(QPoint(loc.first_column-1, loc.first_line-1),
-	                             QPoint(loc.last_column-1, loc.last_line-1)));
-	  QString prev = editor->selectedText();
-	  QString res = updateTranslate(prev,
-	    (dx + dy) * (axis == 0 ? 1 : 0),
-	    (dx + dy) * (axis == 1 ? 1 : 0),
-	    (dx + dy) * (axis == 2 ? 1 : 0));
-	  editor->replaceSelectedText(res);
-	  int delta = res.length() - prev.length();
-	  const_cast<ModuleInstantiation*>(trans->modinst)->setLocation(loc.first_line, loc.first_column, loc.last_line, loc.last_column + delta);
-	  TransformNode* t = dynamic_cast<TransformNode*>(trans);
-	  if (t)
-	    t->matrix.translate(Vector3d(
-	      (dx + dy) * (axis == 0 ? 1 : 0),
-	      (dx + dy) * (axis == 1 ? 1 : 0),
-	      (dx + dy) * (axis == 2 ? 1 : 0)));
+	  Location loc = node->modinst->getLocation();
+	  editor->setSelection(QRect(QPoint(loc.first_column - 1, loc.first_line - 1),
+	    QPoint(loc.first_column - 1, loc.first_line - 1)));
+	  editor->replaceSelectedText("move(0,0,0, 0,0,0, 1,1,1)");
+	  // that definitely requires a recompile
+	  //compile(false, false, false);
+	  int mid = metaObject()->indexOfMethod("compile(bool, bool, bool)");
+	  QMetaMethod method = metaObject()->method(mid);
+	  method.invoke(this, Qt::QueuedConnection, Q_ARG(bool, false),
+	                Q_ARG(bool, false),
+	                Q_ARG(bool, false));
+	  //if (this->root_node) compileCSG(false, true);
+	  //viewModePreview();
+	  prevCursor.setX(prevCursor.x() + strlen("move(0,0,0, 0,0,0, 1,1,1)"));
 	  editor->setSelection(QRect(prevCursor, prevCursor));
-	  prevCursor = editor->cursorPosition();
-	  std::cerr << "pc out " << prevCursor.x() << " " << prevCursor.y() << std::endl;
-	  if (this->root_node) compileCSG(false, true);
-	  viewModePreview();
+	  return;
 	}
+	int field = 0;
+	// what to update?
+	if (modifiers & Qt::ShiftModifier)
+	{
+	  field = 3;
+	  dx *= 2.0;
+	  dy *= 2.0;
+	}
+	else if (modifiers & Qt::AltModifier)
+	{
+	  field = 6;
+	  dx /= 10.0;
+	  dy /= 10.0;
+	}
+	else
+	{
+	  field = 0;
+	  dx /= 10.0;
+	  dy /= 10.0;
+	}
+	field += axis;
+	
+	QPoint prevCursor = editor->cursorPosition();
+	Location loc = move->modinst->getLocation();
+	editor->setSelection(QRect(QPoint(loc.first_column-1, loc.first_line-1),
+	                           QPoint(loc.last_column-1+1, loc.last_line-1)));
+	QString prev = editor->selectedText();
+	QString res = updateMove(prev, field, dx+dy);
+	editor->replaceSelectedText(res);
+	int delta = res.length() - prev.length();
+	const_cast<ModuleInstantiation*>(move->modinst)->setLocation(loc.first_line, loc.first_column, loc.last_line, loc.last_column + delta);
+	if (node->modinst)
+	{
+	  Location loc = node->modinst->getLocation();
+	  const_cast<ModuleInstantiation*>(node->modinst)->setLocation(loc.first_line, loc.first_column, loc.last_line, loc.last_column + delta);
+	}
+	prevCursor.setX(prevCursor.x() + delta);
+	// to avoid a recompile, go patch the transforms in the tree
+	updateTreeTransform(stack, field, dx+dy);
+	editor->setSelection(QRect(prevCursor, prevCursor));
+	prevCursor = editor->cursorPosition();
+	std::cerr << "pc out " << prevCursor.x() << " " << prevCursor.y() << std::endl;
+	if (this->root_node) compileCSG(false, true);
+	viewModePreview();
 }
 
 void MainWindow::pickedObject(int id)

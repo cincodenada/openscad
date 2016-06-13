@@ -78,6 +78,7 @@ void CSGTreeEvaluator::applyToChildren(State &state, const AbstractNode &node, O
 					// For difference, we inherit the flag from the positive object
 					(t2->isBackground() || op == OPENSCAD_DIFFERENCE)) {
 				t = CSGOperation::createCSGNode(op, t1, t2);
+				t->setMatrix(state.matrix());
 				t->setBackground(true);
 			}
 			// Background objects are simply moved to backgroundNodes
@@ -91,6 +92,7 @@ void CSGTreeEvaluator::applyToChildren(State &state, const AbstractNode &node, O
 			}
 			else {
 				t = CSGOperation::createCSGNode(op, t1, t2);
+				t->setMatrix(state.matrix());
 			}
 			// Handle highlight
 				switch (op) {

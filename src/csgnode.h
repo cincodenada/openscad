@@ -27,9 +27,11 @@ public:
 	void setBackground(bool on) { on ? this->flags |= FLAG_BACKGROUND : this->flags &= ~FLAG_BACKGROUND; }
 	bool isSelected() const { return selected;}
 	void setSelected(bool on) { selected = on;}
+	void setMatrix(Transform3d m) { this->matrix = m;}
+	Transform3d getMatrix() const { return matrix;}
+	Transform3d matrix;
 protected:
 	virtual void initBoundingBox() = 0;
-
 	BoundingBox bbox;
 	unsigned int flags;
 	bool selected;
@@ -72,7 +74,6 @@ public:
 
 	std::string label;
 	shared_ptr<const Geometry> geom;
-	Transform3d matrix;
 	Color4f color;
 
 	friend class CSGProducts;

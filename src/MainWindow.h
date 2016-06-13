@@ -91,7 +91,7 @@ private slots:
 	void showProgress();
 	void openCSGSettingsChanged();
 	void consoleOutput(const QString &msg);
-
+	void compile(bool reload, bool forcedone = false, bool dont_signal = false);
 private:
         void initActionIcon(QAction *action, const char *darkResource, const char *lightResource);
         void handleFileDrop(const QString &filename);
@@ -101,7 +101,6 @@ private:
 	bool fileChangedOnDisk();
 	void compileTopLevelDocument();
         void updateCompileResult();
-	void compile(bool reload, bool forcedone = false);
 	void compileCSG(bool procevents, bool quiet = false);
 	bool maybeSave();
         void saveError(const QIODevice &file, const std::string &msg);

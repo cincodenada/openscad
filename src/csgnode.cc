@@ -97,8 +97,9 @@ shared_ptr<CSGNode> CSGOperation::createCSGNode(OpenSCADOperator type, shared_pt
 }
 
 CSGLeaf::CSGLeaf(const shared_ptr<const Geometry> &geom, const Transform3d &matrix, const Color4f &color, const std::string &label)
-	: label(label), matrix(matrix), color(color)
+	: label(label), color(color)
 {
+  setMatrix(matrix);
 	if (geom && !geom->isEmpty()) this->geom = geom;
 	initBoundingBox();
 }
@@ -211,7 +212,7 @@ BoundingBox CSGProduct::getBoundingBox() const
 		if (csgobj.leaf->geom) {
 			BoundingBox psbox = csgobj.leaf->geom->getBoundingBox();
 			// FIXME: Should intersect rather than extend
-			if (!psbox.isEmpty()) bbox.extend(csgobj.leaf->matrix * psbox);
+			if (!psbox.isEmpty()) bbox.extend(csgobj.leaf->getMatrix() * psbox);
 		}
 	}
 	return bbox;
