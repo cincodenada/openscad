@@ -2825,27 +2825,35 @@ QString updateMove(QString text, int field, double delta)
   std::cerr << "FIELD: " << fields.size() << std::endl;
   if (fields.size() != 9)
     return text;
-  QString s = fields[field];
-  s = s.trimmed();
-  bool ok;
-  double plainval = s.toDouble(&ok);
-  if (ok)
-  {
-    s.setNum(plainval + delta);
-  }
+  std::vector<int> targets;
+  if (field == 9)
+    targets = {6, 7, 8};
   else
-  { // there is some other stuff in the string, like added constants maybe
-    QRegExp plus("\\s*\\+\\s*(-?[0-9.]+)$");
-    int p = plus.indexIn(s);
-    if (p != -1)
+    targets = {field};
+  for (auto field: targets)
+  {
+    QString s = fields[field];
+    s = s.trimmed();
+    bool ok;
+    double plainval = s.toDouble(&ok);
+    if (ok)
     {
-      double v = plus.cap(1).toDouble() + delta;
-      s = s.mid(0, p) + " + " + QString().setNum(v, 'f');
+      s.setNum(plainval + delta);
     }
     else
-      s += " + " + QString().setNum(delta);
+    { // there is some other stuff in the string, like added constants maybe
+      QRegExp plus("\\s*\\+\\s*(-?[0-9.]+)$");
+      int p = plus.indexIn(s);
+      if (p != -1)
+      {
+        double v = plus.cap(1).toDouble() + delta;
+        s = s.mid(0, p) + " + " + QString().setNum(v, 'f');
+      }
+      else
+        s += " + " + QString().setNum(delta);
+    }
+    fields[field] = s;
   }
-  fields[field] = s;
   return text.mid(0, p) + "(" + fields.join(",") + ")" + text.mid(p+qr.cap(0).length());
 }
 
@@ -2899,7 +2907,13 @@ void updateTreeTransform(std::vector<AbstractNode*> const& stack, int field, dou
     auto t = dynamic_cast<TransformNode*>(target);
     if (!t)
       return;
-    t->matrix.data()[(field-6)*5] += val;
+    if (field == 9)
+    {
+      for (int i=0; i<3; ++i)
+        t->matrix.data()[i*5] += val;
+    }
+    else
+      t->matrix.data()[(field-6)*5] += val;
     /*
     t->matrix.scale(Vector3d(
       (field == 6) ? val : 1.0,
@@ -2926,6 +2940,37 @@ static std::string code_of(Primitive what, bool centered)
   return res;
 }
 
+void MainWindow::insertCSGOp(int id, std::string const& op)
+{
+  std::vector<AbstractNode*> stack;
+	AbstractNode* node = find_by_id(absolute_root_node, id, stack);
+	if (!node ||!node->modinst)
+	  return;
+	auto loc = node->modinst->getLocation();
+	QPoint beg(0, loc.first_line-1);
+	QPoint end(0, 300000);
+	editor->setSelection(QRect(beg, end));
+	QString content = editor->selectedText();
+	// figure out where it ends
+	QStringList lines = content.split("\n");
+	int depth = lines[0].count("{") - lines[0].count("}");
+	int lend = 0;
+	while (depth && lend < lines.size())
+	{
+	  ++lend;
+	  depth += lines[lend].count("{") - lines[lend].count("}");
+	}
+	editor->setSelection(QRect(beg, beg));
+	editor->replaceSelectedText((op + "() {\n").c_str());
+	beg.setY(beg.y()+lend+2);
+	editor->setSelection(QRect(beg, beg));
+	editor->replaceSelectedText("}\n");
+	QMetaObject::invokeMethod(this, "compile", Qt::QueuedConnection,
+	  Q_ARG(bool, false),
+	  Q_ARG(bool, false),
+	  Q_ARG(bool, false));
+}
+
 void MainWindow::insertObject(int sibling_id, Primitive what, bool centered)
 {
   std::vector<AbstractNode*> stack;
@@ -2934,8 +2979,21 @@ void MainWindow::insertObject(int sibling_id, Primitive what, bool centered)
 	if (!node || !node->modinst)
 	  return;
 	auto loc = node->modinst->getLocation();
-	QPoint end(0, loc.first_line); // +1-1
-	editor->setSelection(QRect(end, end));
+	QPoint beg(0, loc.first_line-1);
+	QPoint end(0, 300000);
+	editor->setSelection(QRect(beg, end));
+	QString content = editor->selectedText();
+	// figure out where it ends
+	QStringList lines = content.split("\n");
+	int depth = lines[0].count("{") - lines[0].count("}");
+	int lend = 0;
+	while (depth && lend < lines.size())
+	{
+	  ++lend;
+	  depth += lines[lend].count("{") - lines[lend].count("}");
+	}
+	beg.setY(beg.y()+lend+1);
+	editor->setSelection(QRect(beg, beg));
 	editor->replaceSelectedText((code + "\n").c_str());
 	this->afterCompileSlot = "csgRender";
 	std::cerr << "invoke compile" << std::endl;
@@ -2943,8 +3001,8 @@ void MainWindow::insertObject(int sibling_id, Primitive what, bool centered)
 	  Q_ARG(bool, false),
 	  Q_ARG(bool, false),
 	  Q_ARG(bool, false));
-	end.setX(code.size()-2);
-	editor->setSelection(QRect(end, end));
+	beg.setX(code.size()-2);
+	editor->setSelection(QRect(beg, beg));
 }
 
 void MainWindow::dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers)
@@ -2983,25 +3041,26 @@ void MainWindow::dragObject(int id, int axis, double dx, double dy, int buttons,
 	}
 	int field = 0;
 	// what to update?
-	if (modifiers & Qt::ShiftModifier)
+	if (modifiers & Qt::AltModifier)
 	{
-	  field = 3;
+	  field = 6 + axis;
+	  dx /= 10.0;
+	  dy /= 10.0;
+	  if (modifiers & Qt::ShiftModifier)
+	    field = 9;
+	}
+	else if (modifiers & Qt::ShiftModifier)
+	{
+	  field = 3 + axis;
 	  dx *= 2.0;
 	  dy *= 2.0;
 	}
-	else if (modifiers & Qt::AltModifier)
-	{
-	  field = 6;
-	  dx /= 10.0;
-	  dy /= 10.0;
-	}
 	else
 	{
-	  field = 0;
+	  field = 0 + axis;
 	  dx /= 10.0;
 	  dy /= 10.0;
 	}
-	field += axis;
 	
 	QPoint prevCursor = editor->cursorPosition();
 	Location loc = move->modinst->getLocation();
@@ -3058,6 +3117,12 @@ void MainWindow::glviewKeyPress(int key, Qt::KeyboardModifiers mods)
     insertObject(qglview->last_pick_id, Primitive::cube, true);
   else if (key == Qt::Key_Y)
     insertObject(qglview->last_pick_id, Primitive::cylinder, true);
+  else if (key == Qt::Key_U)
+    insertCSGOp(qglview->last_pick_id, "union");
+  else if (key == Qt::Key_I)
+    insertCSGOp(qglview->last_pick_id, "intersection");
+  else if (key == Qt::Key_D)
+    insertCSGOp(qglview->last_pick_id, "difference");
 }
 
 static bool should_skip(AbstractNode* target)

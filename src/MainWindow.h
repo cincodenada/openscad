@@ -258,6 +258,7 @@ public slots:
 	void cursorPositionChanged(int line, int index);
 	void glviewKeyPress(int key, Qt::KeyboardModifiers mods);
 	void insertObject(int sibling_id, Primitive what, bool centered);
+	void insertCSGOp(int id, std::string const& op);
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);
 	static bool mdiMode;
