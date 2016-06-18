@@ -17,6 +17,13 @@
 #include <QTime>
 #include <QIODevice>
 
+enum class Primitive
+{
+  sphere,
+  cylinder,
+  cube,
+};
+
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
 	Q_OBJECT
@@ -250,6 +257,7 @@ public slots:
 	void dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers);
 	void cursorPositionChanged(int line, int index);
 	void glviewKeyPress(int key, Qt::KeyboardModifiers mods);
+	void insertObject(int sibling_id, Primitive what, bool centered);
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);
 	static bool mdiMode;

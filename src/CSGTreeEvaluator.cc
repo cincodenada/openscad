@@ -92,7 +92,8 @@ void CSGTreeEvaluator::applyToChildren(State &state, const AbstractNode &node, O
 			}
 			else {
 				t = CSGOperation::createCSGNode(op, t1, t2);
-				t->setMatrix(state.matrix());
+				if (t)
+				  t->setMatrix(state.matrix());
 			}
 			// Handle highlight
 				switch (op) {

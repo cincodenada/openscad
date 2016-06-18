@@ -899,6 +899,7 @@ void MainWindow::refreshDocument()
 */
 void MainWindow::compile(bool reload, bool forcedone, bool dont_signal)
 {
+  std::cerr << "COMPILE reload=" << reload <<" fd=" << forcedone << std::endl;
 	bool shouldcompiletoplevel = false;
 	bool didcompile = false;
 
@@ -932,6 +933,7 @@ void MainWindow::compile(bool reload, bool forcedone, bool dont_signal)
 	}
 
 	if (shouldcompiletoplevel) {
+	  std::cerr << "Compile top level" << std::endl;
 		console->clear();
 		if (editor->isContentModified()) saveBackup();
 		compileTopLevelDocument();
@@ -966,7 +968,12 @@ void MainWindow::compile(bool reload, bool forcedone, bool dont_signal)
 	}
 
 	if (!dont_signal)
+	{
+	  std::cerr << "compiledone() "<< std::endl;
 	  compileDone(didcompile | forcedone);
+	}
+	else
+	  compileEnded();
 }
 
 void MainWindow::waitAfterReload()
@@ -1024,6 +1031,7 @@ void MainWindow::updateCompileResult()
 
 void MainWindow::compileDone(bool didchange)
 {
+  std::cerr << "compiledone dc=" << didchange<<" acs=" << afterCompileSlot << std::endl;
 	const char *callslot;
 	if (didchange) {
 		updateTemporalVariables();
@@ -1042,8 +1050,10 @@ void MainWindow::compileDone(bool didchange)
 
 void MainWindow::compileEnded()
 {
+  std::cerr << "compileEnded()" << std::endl;
 	clearCurrentOutput();
-	GuiLocker::unlock();
+	if (GuiLocker::isLocked())
+	  GuiLocker::unlock();
 	if (designActionAutoReload->isChecked()) autoReloadTimer->start();
 }
 
@@ -1764,7 +1774,11 @@ bool MainWindow::checkEditorModified()
 
 void MainWindow::actionReloadRenderPreview()
 {
-	if (GuiLocker::isLocked()) return;
+	if (GuiLocker::isLocked())
+	{
+	  std::cerr << "LOCKED in actionReloadRenderPreview" << std::endl;
+	  return;
+	}
 	GuiLocker::lock();
 	autoReloadTimer->stop();
 	setCurrentOutput();
@@ -1799,7 +1813,11 @@ void MainWindow::actionRenderPreview()
 	static bool preview_requested;
 
 	preview_requested=true;
-	if (GuiLocker::isLocked()) return;
+	if (GuiLocker::isLocked())
+	{
+	  std::cerr << "LOCKED in actionRenderPreview" << std::endl;
+	  return;
+	}
 	GuiLocker::lock();
 	autoReloadTimer->stop();
 	preview_requested=false;
@@ -1820,6 +1838,7 @@ void MainWindow::actionRenderPreview()
 
 void MainWindow::csgRender()
 {
+  std::cerr << "csgRender()" << std::endl;
 	if (this->root_node) compileCSG(!viewActionAnimate->isChecked());
 
 	// Go to non-CGAL view mode
@@ -1851,7 +1870,7 @@ void MainWindow::csgRender()
 			img.save(filename, "PNG");
 		}
 	}
-
+	std::cerr << "invoke compileEnded" << std::endl;
 	compileEnded();
 }
 
@@ -1859,7 +1878,11 @@ void MainWindow::csgRender()
 
 void MainWindow::actionRender()
 {
-	if (GuiLocker::isLocked()) return;
+	if (GuiLocker::isLocked()) 
+	{
+	  std::cerr << "LOCKED in actionRender" << std::endl;
+	  return;
+	}
 	GuiLocker::lock();
 	autoReloadTimer->stop();
 	setCurrentOutput();
@@ -2740,6 +2763,9 @@ void MainWindow::setContentsChanged()
 
 static AbstractNode* find_by_id(AbstractNode* n, int id, std::vector<AbstractNode*>& stack)
 {
+  // push root node
+  if (stack.empty())
+    stack.push_back(n);
 	if (n->index() == id)
 		return n;
 	const std::vector<AbstractNode*> & children = n->getChildren();
@@ -2841,11 +2867,11 @@ AbstractNode* find_move_node(std::vector<AbstractNode*> const& stack)
 
 void updateTreeTransform(std::vector<AbstractNode*> const& stack, int field, double val)
 {
-  // stack is scale translate rotate group object
+  // stack is translate rx ry rz scale group object
   // fields are translate rotate scale
   if (field < 3)
   {
-    AbstractNode* target = stack[stack.size()-move_stack_size + 2];
+    AbstractNode* target = stack[stack.size()-move_stack_size + 1];
     auto t = dynamic_cast<TransformNode*>(target);
     if (!t)
       return;
@@ -2857,7 +2883,7 @@ void updateTreeTransform(std::vector<AbstractNode*> const& stack, int field, dou
   else if (field < 6)
   { // rotate
     val = val * M_PI / 180.0;
-    AbstractNode* target = stack[stack.size()-move_stack_size + 3 + (field-3)];
+    AbstractNode* target = stack[stack.size()-move_stack_size + 2 + (field-3)];
     auto t = dynamic_cast<TransformNode*>(target);
     if (!t)
       return;
@@ -2869,7 +2895,7 @@ void updateTreeTransform(std::vector<AbstractNode*> const& stack, int field, dou
   }
   else
   {
-    AbstractNode* target = stack[stack.size()-move_stack_size + 1];
+    AbstractNode* target = stack[stack.size()-move_stack_size + 5];
     auto t = dynamic_cast<TransformNode*>(target);
     if (!t)
       return;
@@ -2880,6 +2906,45 @@ void updateTreeTransform(std::vector<AbstractNode*> const& stack, int field, dou
       (field == 7) ? val : 1.0,
       (field == 8) ? val : 1.0));*/
   }
+}
+
+static std::string code_of(Primitive what, bool centered)
+{
+  std::string res;
+  switch(what)
+  {
+  case Primitive::sphere:
+    res = "move(0,0,0,0,0,0,1,1,1) sphere(r=1);";
+    break;
+  case Primitive::cylinder:
+    res = "move(0,0,0,0,0,0,1,1,1) cylinder(h=1, r=1);";
+    break;
+  case Primitive::cube:
+    res = "move(0,0,0,0,0,0,1,1,1) cube([1,1,1]);";
+    break;
+  }
+  return res;
+}
+
+void MainWindow::insertObject(int sibling_id, Primitive what, bool centered)
+{
+  std::vector<AbstractNode*> stack;
+	AbstractNode* node = find_by_id(absolute_root_node, sibling_id, stack);
+	std::string code = code_of(what, centered);
+	if (!node || !node->modinst)
+	  return;
+	auto loc = node->modinst->getLocation();
+	QPoint end(0, loc.first_line); // +1-1
+	editor->setSelection(QRect(end, end));
+	editor->replaceSelectedText((code + "\n").c_str());
+	this->afterCompileSlot = "csgRender";
+	std::cerr << "invoke compile" << std::endl;
+	QMetaObject::invokeMethod(this, "compile", Qt::QueuedConnection,
+	  Q_ARG(bool, false),
+	  Q_ARG(bool, false),
+	  Q_ARG(bool, false));
+	end.setX(code.size()-2);
+	editor->setSelection(QRect(end, end));
 }
 
 void MainWindow::dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers)
@@ -2987,6 +3052,21 @@ void MainWindow::glviewKeyPress(int key, Qt::KeyboardModifiers mods)
     changeSelection(TreeMove::prevSibling, skip);
   else if (key == Qt::Key_Right)
     changeSelection(TreeMove::nextSibling, skip);
+  else if (key == Qt::Key_S)
+    insertObject(qglview->last_pick_id, Primitive::sphere, true);
+  else if (key == Qt::Key_C)
+    insertObject(qglview->last_pick_id, Primitive::cube, true);
+  else if (key == Qt::Key_Y)
+    insertObject(qglview->last_pick_id, Primitive::cylinder, true);
+}
+
+static bool should_skip(AbstractNode* target)
+{
+  return target->name() == "transform"
+          || target->name() == "color"
+	        || (target->name() == "group"
+	          && (target->modinst->name()=="children"
+	            || target->modinst->name() == "move"));
 }
 
 bool MainWindow::changeSelection(TreeMove m, bool skip_transforms)
@@ -3011,7 +3091,7 @@ bool MainWindow::changeSelection(TreeMove m, bool skip_transforms)
 	    while (p>0 && target)
 	    {
 	      std::cerr << "tname " << target->name() << std::endl;
-	      if (target->name() == "transform" || target->name() == "color")
+	      if (should_skip(target))
 	        --p;
 	      else
 	        break;
@@ -3026,7 +3106,7 @@ bool MainWindow::changeSelection(TreeMove m, bool skip_transforms)
 	    target = c.front();
 	  if (skip_transforms && target)
 	  {
-	    while ((target->name() == "transform" || target->name() == "color")
+	    while ((target->name() == "transform" || target->name() == "color" || target->name() == "group")
 	      && target->getChildren().size() == 1)
 	      target = target->getChildren().front();
 	  }
@@ -3041,7 +3121,7 @@ bool MainWindow::changeSelection(TreeMove m, bool skip_transforms)
 	    if (skip_transforms)
 	    {
 	      int p = stack.size()-2;
-	      while (p>0 && (parent->name() == "transform" || parent->name() == "color"))
+	      while (p>0 && (parent->name() == "transform" || parent->name() == "color" || parent->name() == "group"))
 	      {
 	        self = parent;
 	        parent = stack[--p];
@@ -3056,7 +3136,7 @@ bool MainWindow::changeSelection(TreeMove m, bool skip_transforms)
 	      % c.size()];
 	      if (skip_transforms)
 	      {
-	        while ((target->name() == "transform" || target->name() == "color")
+	        while ((target->name() == "transform" || target->name() == "color" || target->name() == "group")
 	          && target->getChildren().size() == 1)
 	        target = target->getChildren().front();
 	      }
