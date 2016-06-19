@@ -210,8 +210,9 @@ void QGLView::mousePressEvent(QMouseEvent *event)
     std::cerr << hit << std::endl;
     if (event->modifiers() & Qt::ControlModifier && hit < 65000)
     {
+      int prev = last_pick_id;
       last_pick_id = hit;
-      emit pickedObject(hit);
+      emit pickedObject(hit, prev, event->modifiers());
       return;
     }
     if (hit >= 65000 && hit <65003)

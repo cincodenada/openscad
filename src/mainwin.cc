@@ -565,7 +565,7 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->editorDock, SIGNAL(topLevelChanged(bool)), this, SLOT(editorTopLevelChanged(bool)));
 	connect(this->consoleDock, SIGNAL(topLevelChanged(bool)), this, SLOT(consoleTopLevelChanged(bool)));
 
-	connect(this->qglview, SIGNAL(pickedObject(int)), this, SLOT(pickedObject(int)));
+	connect(this->qglview, SIGNAL(pickedObject(int, int, int)), this, SLOT(pickedObject(int, int, int)));
 	connect(this->qglview, SIGNAL(dragObject(int, int, double, double, int, int)),
 	        this, SLOT(dragObject(int, int, double, double, int, int)));
 	connect(this->qglview, SIGNAL(keyPress(int, Qt::KeyboardModifiers)), this, SLOT(glviewKeyPress(int, Qt::KeyboardModifiers)));
@@ -2955,7 +2955,7 @@ void MainWindow::insertCSGOp(int id, std::string const& op)
 	QStringList lines = content.split("\n");
 	int depth = lines[0].count("{") - lines[0].count("}");
 	int lend = 0;
-	while (depth && lend < lines.size())
+	while (depth && lend < lines.size()-1)
 	{
 	  ++lend;
 	  depth += lines[lend].count("{") - lines[lend].count("}");
@@ -2965,6 +2965,66 @@ void MainWindow::insertCSGOp(int id, std::string const& op)
 	beg.setY(beg.y()+lend+2);
 	editor->setSelection(QRect(beg, beg));
 	editor->replaceSelectedText("}\n");
+	QMetaObject::invokeMethod(this, "compile", Qt::QueuedConnection,
+	  Q_ARG(bool, false),
+	  Q_ARG(bool, false),
+	  Q_ARG(bool, false));
+}
+
+void MainWindow::moveNode(int node_id, int target_id, bool before)
+{
+  std::vector<AbstractNode*> node_stack;
+	AbstractNode* node = find_by_id(absolute_root_node, node_id, node_stack);
+	if (!node || !node->modinst)
+	  return;
+	std::vector<AbstractNode*> target_stack;
+	AbstractNode* target = find_by_id(absolute_root_node, target_id, target_stack);
+	if (!target || !target->modinst)
+	  return;
+	auto loc = node->modinst->getLocation();
+	QPoint beg(0, loc.first_line-1);
+	QPoint end(0, 300000);
+	editor->setSelection(QRect(beg, end));
+	QString content = editor->selectedText();
+	// figure out where it ends
+	QStringList lines = content.split("\n");
+	int depth = lines[0].count("{") - lines[0].count("}");
+	int lend = 0;
+	while (depth && lend < lines.size()-1)
+	{
+	  ++lend;
+	  depth += lines[lend].count("{") - lines[lend].count("}");
+	}
+	end.setY(beg.y()+1 + lend);
+	editor->setSelection(QRect(beg, end));
+	QString code = editor->selectedText();
+	editor->replaceSelectedText("");
+	
+	// figure out insertion point
+	loc = target->modinst->getLocation();
+	beg = QPoint(0, loc.first_line-1);
+	if (before)
+	{
+	  editor->setSelection(QRect(beg, beg));
+	  editor->replaceSelectedText(code);
+	}
+	else
+	{
+	  editor->setSelection(QRect(beg, QPoint(0, 30000)));
+	  QString content = editor->selectedText();
+	  // figure out where it ends
+	  QStringList lines = content.split("\n");
+	  int depth = lines[0].count("{") - lines[0].count("}");
+	  int lend = 0;
+	  while (depth && lend < lines.size()-1)
+	  {
+	    ++lend;
+	    depth += lines[lend].count("{") - lines[lend].count("}");
+	  }
+	  beg.setY(beg.y() + depth+1);
+	  editor->setSelection(QRect(beg, beg));
+	  editor->replaceSelectedText(code);
+	}
 	QMetaObject::invokeMethod(this, "compile", Qt::QueuedConnection,
 	  Q_ARG(bool, false),
 	  Q_ARG(bool, false),
@@ -2987,7 +3047,7 @@ void MainWindow::insertObject(int sibling_id, Primitive what, bool centered)
 	QStringList lines = content.split("\n");
 	int depth = lines[0].count("{") - lines[0].count("}");
 	int lend = 0;
-	while (depth && lend < lines.size())
+	while (depth && lend < lines.size()-1)
 	{
 	  ++lend;
 	  depth += lines[lend].count("{") - lines[lend].count("}");
@@ -3086,8 +3146,13 @@ void MainWindow::dragObject(int id, int axis, double dx, double dy, int buttons,
 	viewModePreview();
 }
 
-void MainWindow::pickedObject(int id)
+void MainWindow::pickedObject(int id, int prev_id, int modifiers)
 {
+  if (modifiers & Qt::ShiftModifier)
+  {
+    moveNode(prev_id, id, modifiers & Qt::AltModifier);
+    return;
+  }
   std::vector<AbstractNode*> stack;
 	AbstractNode* node = find_by_id(absolute_root_node, id, stack);
 	if (!node || !node->modinst)

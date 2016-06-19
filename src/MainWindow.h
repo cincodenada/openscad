@@ -253,12 +253,13 @@ public slots:
 	void waitAfterReload();
 	void autoReloadSet(bool);
 	void setContentsChanged();
-	void pickedObject(int);
+	void pickedObject(int id, int prev_id, int modifiers);
 	void dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers);
 	void cursorPositionChanged(int line, int index);
 	void glviewKeyPress(int key, Qt::KeyboardModifiers mods);
 	void insertObject(int sibling_id, Primitive what, bool centered);
 	void insertCSGOp(int id, std::string const& op);
+	void moveNode(int node_id, int target_id, bool before);
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);
 	static bool mdiMode;

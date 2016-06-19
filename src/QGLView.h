@@ -101,7 +101,7 @@ private slots:
 
 signals:
 	void doAnimateUpdate();
-	void pickedObject(int);
+	void pickedObject(int id, int prev_id, int modifiers);
 	void dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers);
 	void keyPress(int key, Qt::KeyboardModifiers mods);
 };
