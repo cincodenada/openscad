@@ -1231,7 +1231,8 @@ void MainWindow::compileCSG(bool procevents, bool quiet)
 																								this->highlights_products,
 																								this->background_products,
 																								this->qglview->shaderinfo,
-																								csgrenderer.selected);
+																								csgrenderer.selected,
+																								csgrenderer.bboxes);
 		std::cerr << "set last_pick_id " << csgrenderer.selectedIndex << std::endl;
 		qglview->last_pick_id = csgrenderer.selectedIndex;
 	}
@@ -2761,7 +2762,7 @@ void MainWindow::setContentsChanged()
 	this->contentschanged = true;
 }
 
-static AbstractNode* find_by_id(AbstractNode* n, int id, std::vector<AbstractNode*>& stack)
+AbstractNode* find_by_id(AbstractNode* n, int id, std::vector<AbstractNode*>& stack)
 {
   // push root node
   if (stack.empty())

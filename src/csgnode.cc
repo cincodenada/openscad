@@ -120,6 +120,56 @@ CSGOperation::CSGOperation(OpenSCADOperator type, CSGNode *left, CSGNode *right)
 	initBoundingBox();
 }
 
+void CSGNode::translate(Vector3d t)
+{
+  matrix.pretranslate(t);
+  bbox.translate(t);
+}
+
+void CSGOperation::translate(Vector3d t)
+{
+  CSGNode::translate(t);
+  for (auto& c : this->children)
+    c->translate(t);
+}
+
+void CSGNode::transform(std::function<void(Transform3d&)> f)
+{
+  f(this->matrix);
+}
+
+void CSGOperation::transform(std::function<void(Transform3d&)> f)
+{
+  CSGNode::transform(f);
+  for (auto& c: this->children)
+    c->transform(f);
+}
+
+shared_ptr<CSGNode> CSGOperation::clone(Vector3d translate) const
+{
+  auto res = new CSGOperation();
+  res->bbox = this->bbox;
+  res->flags = this->flags;
+  res->type = this->type;
+  res->matrix = this->matrix;
+  for (auto const& c: this->children)
+    res->children.push_back(c->clone(translate));
+  res->matrix.pretranslate(translate);
+  res->bbox.translate(translate);
+  return std::shared_ptr<CSGNode>(res);
+}
+
+shared_ptr<CSGNode> CSGLeaf::clone(Vector3d translate) const
+{
+  auto res = new CSGLeaf(this->geom, this->matrix, this->color, this->label);
+  res->bbox = this->bbox;
+  res->flags = this->flags;
+  res->matrix = this->matrix;
+  res->matrix.pretranslate(translate);
+  res->bbox.translate(translate);
+  return std::shared_ptr<CSGNode>(res);
+}
+
 void CSGLeaf::initBoundingBox()
 {
 	if (!this->geom) return;

@@ -40,9 +40,10 @@ public:
 
 	shared_ptr<class CSGNode> selected;
 	int selectedIndex;
+	std::vector<BoundingBox> bboxes;
 private:
   void addToParent(const State &state, const AbstractNode &node);
-	void applyToChildren(State &state, const AbstractNode &node, OpenSCADOperator op);
+	void applyToChildren(State &state, const AbstractNode &node, OpenSCADOperator op, bool showTree = false);
 	shared_ptr<CSGNode> evaluateCSGNodeFromGeometry(State &state, 
 																									const shared_ptr<const class Geometry> &geom,
 																									const class ModuleInstantiation *modinst, 

@@ -15,7 +15,7 @@ public:
 		FLAG_HIGHLIGHT = 0x02
 	};
 
-	CSGNode(Flag flags = FLAG_NONE) : flags(flags), selected(false) {}
+	CSGNode(Flag flags = FLAG_NONE) : flags(flags), selected(false), splitTreeId(-1), splitTreeParent(-1) {}
 	virtual ~CSGNode() {}
 	virtual std::string dump() = 0;
 
@@ -30,12 +30,20 @@ public:
 	void setMatrix(Transform3d m) { this->matrix = m;}
 	Transform3d getMatrix() const { return matrix;}
 	Transform3d matrix;
+	virtual shared_ptr<CSGNode> clone(Vector3d translate) const = 0;
+	virtual void translate(Vector3d t);
+	virtual void transform(std::function<void(Transform3d&)> f);
+	int splitTreeId;
+	int splitTreeDepth;
+	int splitTreeParent;
+	int splitTreeChildIndex;
 protected:
 	virtual void initBoundingBox() = 0;
 	BoundingBox bbox;
 	unsigned int flags;
 	bool selected;
 	friend class CSGProducts;
+	friend class CSGTreeEvaluator;
 };
 
 class CSGOperation : public CSGNode
@@ -45,7 +53,9 @@ public:
 	virtual ~CSGOperation() {}
 	virtual void initBoundingBox();
 	virtual std::string dump();
-
+	virtual shared_ptr<CSGNode> clone(Vector3d translate) const;
+	virtual void translate(Vector3d t);
+	virtual void transform(std::function<void(Transform3d&)> f);
 	shared_ptr<CSGNode> &left() { return this->children[0]; }
 	shared_ptr<CSGNode> &right() { return this->children[1]; }
 
@@ -71,6 +81,7 @@ public:
 	virtual ~CSGLeaf() {}
 	virtual void initBoundingBox();
 	virtual std::string dump();
+	virtual shared_ptr<CSGNode> clone(Vector3d translate) const;
 
 	std::string label;
 	shared_ptr<const Geometry> geom;

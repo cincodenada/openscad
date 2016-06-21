@@ -119,12 +119,14 @@ OpenCSGRenderer::OpenCSGRenderer(shared_ptr<CSGProducts> root_products,
 																 shared_ptr<CSGProducts> highlights_products,
 																 shared_ptr<CSGProducts> background_products,
 																 GLint *shaderinfo,
-																 shared_ptr<CSGNode> selected)
+																 shared_ptr<CSGNode> selected,
+																 std::vector<BoundingBox> const& bboxes)
 	: root_products(root_products), 
 		highlights_products(highlights_products), 
 		background_products(background_products), shaderinfo(shaderinfo),
 		picking(false),
-		selected(selected)
+		selected(selected),
+		bboxes(bboxes)
 {
 }
 
@@ -151,6 +153,18 @@ void OpenCSGRenderer::draw(bool /*showfaces*/, bool showedges) const
 	  //glTranslatef(c.x(), c.y(), c.z());
 	  //glScalef(l.x(), l.y(), l.z());
 	  drawHandles(picking, l.x()*1.3, l.y()*1.3, l.z()*1.3);
+	}
+	if (!this->bboxes.empty())
+	{
+	  for (auto const& b: this->bboxes)
+	  {
+	    auto c = b.center();
+	    auto s = b.sizes();
+	    PushMatrix pm;
+	    glTranslatef(c.x(), c.y(), c.z());
+	    glScalef(s.x(), s.y(), s.z());
+	    glutWireCube(1);
+	  }
 	}
 }
 

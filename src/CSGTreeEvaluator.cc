@@ -21,6 +21,36 @@
 #include <assert.h>
 #include <cstddef>
 
+template<typename C>
+static int max_of(C const& c)
+{
+  int m = -1;
+  for (auto const& e: c)
+    m = std::max(m, e.second);
+  return m;
+}
+
+static void
+move_at(CSGNode* node, double x, double y, BoundingBox const& ref)
+{
+  auto & nbb = const_cast<BoundingBox&>(node->getBoundingBox());
+  Vector3d scale(ref.sizes().x() / nbb.sizes().x(),
+                 ref.sizes().y() / nbb.sizes().y(),
+                 ref.sizes().z() / nbb.sizes().z());
+  Vector3d trans(ref.center().x() + x * ref.sizes().x(),
+                 ref.center().y(),
+                 ref.center().z() + y * ref.sizes().z());
+  //node->matrix.scale(scale);
+  auto transform = [&](Transform3d& m) {
+    
+    m.pretranslate(nbb.center() * -1);
+    m.prescale(scale);
+    m.pretranslate(trans);
+  };
+  node->transform(transform);
+  nbb = BoundingBox(trans - ref.sizes()/2.0, trans + ref.sizes() / 2.0);
+}
+
 /*!
 	\class CSGTreeEvaluator
 
@@ -30,12 +60,15 @@
 
 shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 {
+  this->root = &node;
   selected.reset();
   selectedIndex = -1;
 	Traverser evaluate(*this, node, Traverser::PRE_AND_POSTFIX);
 	evaluate.execute();
 	
 	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
+	BoundingBox rootbbox;
+	if (t) rootbbox = t->getBoundingBox();
 	if (t) {
             if (t->isHighlight()) this->highlightNodes.push_back(t);
 		if (t->isBackground()) {
@@ -43,7 +76,60 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 			t.reset();
 		}
 	}
+	else
+	  return this->rootNode = t;
 
+	// copmute positioning of background tree hierarchy
+	std::map<int, CSGNode*> nodes;
+	int maxDepth = 0;
+	std::map<int, int> childCount; // nodeId -> directChildCount
+	std::map<int, std::map<int, int>> count; // nodeId -> level -> familyCount
+	std::map<int, std::vector<int>>  perLevel; // level -> [nodeId]
+	for (auto& n: this->backgroundNodes)
+	  if (n->splitTreeId >= 0)
+	  {
+	    nodes.insert(std::make_pair(n->splitTreeId, n.get()));
+	    perLevel[n->splitTreeDepth].push_back(n->splitTreeId);
+	    std::cerr <<"id " << n->splitTreeId <<"  d=" << n->splitTreeDepth <<"  p="
+	    << n->splitTreeParent <<"  ci=" << n->splitTreeChildIndex << std::endl;
+	  }
+	for (auto& n: this->backgroundNodes)
+	  if (n->splitTreeId >= 0)
+	  {
+	    maxDepth = std::max(maxDepth, n->splitTreeDepth);
+	    if (n->splitTreeParent < 0)
+	      continue;
+	    childCount[n->splitTreeParent]++;
+	    count[n->splitTreeParent][n->splitTreeDepth]++;
+	    int pindex = n->splitTreeParent;
+	    while (pindex > 1)
+	    {
+	      CSGNode* p = nodes.at(pindex);
+	      count[p->splitTreeParent][n->splitTreeDepth]++;
+	      pindex = p->splitTreeParent;
+	    }
+	  }
+	std::map<int, int> spaceNeeded;
+	for (auto& n: this->backgroundNodes)
+	  if (n->splitTreeId >= 0)
+	  {
+	    spaceNeeded[n->splitTreeId] = max_of(count[n->splitTreeId]);
+	    std::cerr << n->splitTreeId <<"  sn=" << spaceNeeded[n->splitTreeId] << std::endl;
+	  }
+	this->bboxes.clear();;
+	for (int d=1; d<= maxDepth; ++d)
+	{
+	  int totalSpaceNeeded = 0;
+	  for (auto const& id: perLevel[d])
+	    totalSpaceNeeded += spaceNeeded[id];
+	  double p0 = -totalSpaceNeeded / 2;
+	  for (auto const& id: perLevel[d])
+	  {
+	    move_at(nodes[id], p0, d, rootbbox);
+	    this->bboxes.push_back(nodes[id]->getBoundingBox());
+	    p0 += spaceNeeded[id];
+	  }
+	}
 	return this->rootNode = t;
 }
 
@@ -59,20 +145,33 @@ void CSGTreeEvaluator::applyBackgroundAndHighlight(State &state, const AbstractN
 	}
 }
 
-void CSGTreeEvaluator::applyToChildren(State &state, const AbstractNode &node, OpenSCADOperator op)
+static bool should_skip(AbstractNode* target)
+{
+  return target->name() == "transform"
+          || target->name() == "color"
+	        || (target->name() == "group"
+	          && (target->modinst->name()=="children"
+	            || target->modinst->name() == "move"));
+}
+
+void CSGTreeEvaluator::applyToChildren(State &state, const AbstractNode &node, OpenSCADOperator op, bool showTree)
 {
 	shared_ptr<CSGNode> t1;
+	shared_ptr<CSGNode> bgt1;
 	const ModuleInstantiation *t1_modinst;
+	std::cerr << "ATC " << node.index() << " " << this->visitedchildren[node.index()].size() << std::endl;
 	for(const auto &chnode : this->visitedchildren[node.index()]) {
 		shared_ptr<CSGNode> t2(this->stored_term[chnode->index()]);
+		shared_ptr<CSGNode> bgt2(t2->clone(Vector3d()));
 		const ModuleInstantiation *t2_modinst = chnode->modinst;
 		this->stored_term.erase(chnode->index());
 		if (t2 && !t1) {
 			t1 = t2;
 			t1_modinst = t2_modinst;
+			bgt1 = bgt2;
 		} else if (t2 && t1) {
 
-			shared_ptr<CSGNode> t;
+			shared_ptr<CSGNode> t,bgt;
 			// Handle background
 			if (t1->isBackground() && 
 					// For difference, we inherit the flag from the positive object
@@ -95,6 +194,7 @@ void CSGTreeEvaluator::applyToChildren(State &state, const AbstractNode &node, O
 				if (t)
 				  t->setMatrix(state.matrix());
 			}
+			bgt = CSGOperation::createCSGNode(OPENSCAD_UNION, bgt1, bgt2);
 			// Handle highlight
 				switch (op) {
 				case OPENSCAD_DIFFERENCE:
@@ -133,6 +233,7 @@ void CSGTreeEvaluator::applyToChildren(State &state, const AbstractNode &node, O
 					break;
 				}
 			t1 = t;
+			bgt1 = bgt;
 		}
 	}
 	if (t1) {
@@ -153,6 +254,38 @@ void CSGTreeEvaluator::applyToChildren(State &state, const AbstractNode &node, O
 		  this->selected = t1;
 		  this->selectedIndex = node.index();
 		}
+		if (showTree > 0)
+		{
+		  auto const& bb = bgt1->getBoundingBox();
+		  std::vector<AbstractNode*> stack;
+		  find_by_id(const_cast<AbstractNode*>(this->root), node.index(), stack);
+		  
+		  //std::cerr << "bb " << bb.center().z() << " " << bb.sizes().z() << std::endl;
+		  int depth = 0;
+		  AbstractNode* parent = nullptr;
+		  AbstractNode* me = nullptr;
+		  for (unsigned i=0; i<stack.size()-1; ++i)
+		  {
+		    if (!should_skip(stack[i]))
+		    {
+		      ++depth;
+		      parent = stack[i];
+		      me = stack[i+1];
+		    }
+		  }
+		  std::cerr << "find_by_id " << stack.size() << " " << depth << std::endl;
+		  if (depth)
+		  {
+		    auto const& children = parent->getChildren();
+		    auto cindex = std::find(children.begin(), children.end(), me) - children.begin();
+		    auto dup = bgt1->clone(Vector3d(0, 0, 0));
+		    dup->splitTreeId = node.index();
+		    dup->splitTreeDepth = depth;
+		    dup->splitTreeParent = parent->index();
+		    dup->splitTreeChildIndex = cindex;
+		    this->backgroundNodes.push_back(dup);
+		  }
+		}
 	}
 	this->stored_term[node.index()] = t1;
 }
@@ -169,7 +302,7 @@ Response CSGTreeEvaluator::visit(State &state, const AbstractNode &node)
 Response CSGTreeEvaluator::visit(State &state, const AbstractIntersectionNode &node)
 {
 	if (state.isPostfix()) {
-		applyToChildren(state, node, OPENSCAD_INTERSECTION);
+		applyToChildren(state, node, OPENSCAD_INTERSECTION, true);
 		addToParent(state, node);
 	}
 	return ContinueTraversal;
@@ -247,7 +380,7 @@ Response CSGTreeEvaluator::visit(State &state, const AbstractPolyNode &node)
 Response CSGTreeEvaluator::visit(State &state, const CsgOpNode &node)
 {
 	if (state.isPostfix()) {
-		applyToChildren(state, node, node.type);
+		applyToChildren(state, node, node.type, true);
 		addToParent(state, node);
 	}
 	return ContinueTraversal;

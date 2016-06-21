@@ -114,3 +114,4 @@ public:
 
 std::ostream &operator<<(std::ostream &stream, const AbstractNode &node);
 AbstractNode *find_root_tag(AbstractNode *n);
+AbstractNode* find_by_id(AbstractNode* n, int id, std::vector<AbstractNode*>& stack);
