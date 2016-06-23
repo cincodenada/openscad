@@ -21,6 +21,18 @@
 #include <assert.h>
 #include <cstddef>
 
+class TNode
+{
+public:
+  TNode(int id) : id(id), x(0), parent(nullptr) {}
+  int id;
+  double x;
+  int y;
+  TNode* parent;
+  std::vector<TNode*> children;
+  CSGNode* node;
+};
+
 template<typename C>
 static int max_of(C const& c)
 {
@@ -51,6 +63,59 @@ move_at(CSGNode* node, double x, double y, BoundingBox const& ref)
   nbb = BoundingBox(trans - ref.sizes()/2.0, trans + ref.sizes() / 2.0);
 }
 
+static int space_needed(TNode* t)
+{
+  int res = 0;
+  for (auto c: t->children)
+    res += space_needed(c);
+  if (!res)
+    res = 1;
+  return res;
+}
+
+static void recenterparent(TNode* node)
+{
+  for (auto c: node->children)
+    recenterparent(c);
+  if (!node->children.empty())
+    node->x = (node->children.front()->x + node->children.back()->x) / 2.0;
+}
+static void range(TNode* n, std::pair<double, double> & r)
+{
+  std::cerr << "range " << n->id << " " << r.first << " " << n->x << std::endl;
+  r.first = std::min(r.first, n->x);
+  r.second = std::max(r.second, n->x);
+  for (auto c: n->children)
+    range(c, r);
+}
+
+static void offset(TNode* n, double off)
+{
+  std::cerr << "offset " << n->id << " " << n << " " << n->x << std::endl;
+  n->x += off;
+  for (auto c: n->children)
+    offset(c, off);
+}
+
+static void arrange_tree(TNode* root, double start = 0)
+{
+  root->x = start;
+  double x = start;
+  for (auto c: root->children)
+  {
+    c->x = x;
+    arrange_tree(c, c->x);
+    x += space_needed(c) + 0.1;
+  }
+}
+static void sety(TNode* n, int y)
+{
+  std::cerr << "y " << n->id <<" " << y << std::endl;
+  n->y = y;
+  for (auto c: n->children)
+    sety(c, y+1);
+}
+
 /*!
 	\class CSGTreeEvaluator
 
@@ -79,57 +144,69 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 	else
 	  return this->rootNode = t;
 
-	// copmute positioning of background tree hierarchy
-	std::map<int, CSGNode*> nodes;
-	int maxDepth = 0;
-	std::map<int, int> childCount; // nodeId -> directChildCount
-	std::map<int, std::map<int, int>> count; // nodeId -> level -> familyCount
-	std::map<int, std::vector<int>>  perLevel; // level -> [nodeId]
+	std::map<int, TNode*> tnodes;
 	for (auto& n: this->backgroundNodes)
 	  if (n->splitTreeId >= 0)
 	  {
-	    nodes.insert(std::make_pair(n->splitTreeId, n.get()));
-	    perLevel[n->splitTreeDepth].push_back(n->splitTreeId);
-	    std::cerr <<"id " << n->splitTreeId <<"  d=" << n->splitTreeDepth <<"  p="
-	    << n->splitTreeParent <<"  ci=" << n->splitTreeChildIndex << std::endl;
-	  }
-	for (auto& n: this->backgroundNodes)
-	  if (n->splitTreeId >= 0)
-	  {
-	    maxDepth = std::max(maxDepth, n->splitTreeDepth);
-	    if (n->splitTreeParent < 0)
-	      continue;
-	    childCount[n->splitTreeParent]++;
-	    count[n->splitTreeParent][n->splitTreeDepth]++;
-	    int pindex = n->splitTreeParent;
-	    while (pindex > 1)
+	    std::cerr << n->splitTreeId << " " << n.get() << std::endl;
+	    TNode* t = nullptr;
+	    auto it = tnodes.find(n->splitTreeId);
+	    if (it == tnodes.end())
 	    {
-	      CSGNode* p = nodes.at(pindex);
-	      count[p->splitTreeParent][n->splitTreeDepth]++;
-	      pindex = p->splitTreeParent;
+	      t = new TNode(n->splitTreeId);
+	      t->node = n.get();
+	      tnodes.insert(std::make_pair(n->splitTreeId, t));
 	    }
+	    else
+	    {
+	      t = it->second;
+	      t->node = n.get();
+	    }
+	    tnodes[n->splitTreeId] = t;
+	    TNode* p = nullptr;
+	    it = tnodes.find(n->splitTreeParent);
+	    if (it == tnodes.end())
+	    {
+	      p = new TNode(n->splitTreeParent);
+	      p->node = nullptr;
+	      tnodes.insert(std::make_pair(n->splitTreeParent, p));
+	    }
+	    else
+	      p = it->second;
+	    std::cerr <<"push " << p->id <<" " << t->id << std::endl;
+	    p->children.push_back(t);
+	    t->parent = p;
 	  }
-	std::map<int, int> spaceNeeded;
-	for (auto& n: this->backgroundNodes)
-	  if (n->splitTreeId >= 0)
-	  {
-	    spaceNeeded[n->splitTreeId] = max_of(count[n->splitTreeId]);
-	    std::cerr << n->splitTreeId <<"  sn=" << spaceNeeded[n->splitTreeId] << std::endl;
-	  }
-	this->bboxes.clear();;
-	for (int d=1; d<= maxDepth; ++d)
+	TNode* troot = nullptr;
+	for (auto const& n: tnodes)
 	{
-	  int totalSpaceNeeded = 0;
-	  for (auto const& id: perLevel[d])
-	    totalSpaceNeeded += spaceNeeded[id];
-	  double p0 = -totalSpaceNeeded / 2;
-	  for (auto const& id: perLevel[d])
+	  TNode* i = n.second;
+	  if (!i->node)
+	    std::cerr << "NO LINKED NODE " << i->id << std::endl;
+	  while (i->parent)
+	    i = i->parent;
+	  if (troot && troot != i)
+	    std::cerr << "MULTIPLE ROOTS " << i->id << std::endl;
+	  troot = i;
+	}
+	sety(troot, 0);
+	arrange_tree(troot);
+	recenterparent(troot);
+  std::pair<double, double> r = std::make_pair(10000, -10000);
+  range(troot, r);
+  offset(troot, -(r.first + r.second)/ 2.0);
+	this->bboxes.clear();
+	for (auto& tn: tnodes)
+	{
+	  if (tn.second->node)
 	  {
-	    move_at(nodes[id], p0, d, rootbbox);
-	    this->bboxes.push_back(nodes[id]->getBoundingBox());
-	    p0 += spaceNeeded[id];
+	    move_at(tn.second->node, tn.second->x, (tn.second->y+1)*1.2, rootbbox);
+	    this->bboxes.push_back(tn.second->node->getBoundingBox());
 	  }
 	}
+	for (auto& tn: tnodes)
+	  delete tn.second;
+
 	return this->rootNode = t;
 }
 
