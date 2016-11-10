@@ -130,7 +130,9 @@ public:
 
 static void help(const char *progname, bool failure = false)
 {
-  int tablen = strlen(progname)+8;
+	/*
+  //int tablen = strlen(progname)+8;
+  const int tablen = 12;
   char tabstr[tablen+1];
   for (int i=0;i<tablen;i++) tabstr[i] = ' ';
   tabstr[tablen] = '\0';
@@ -156,6 +158,7 @@ static void help(const char *progname, bool failure = false)
 #endif
          "%2%filename\n",
  				 progname % (const char *)tabstr);
+				 */
 	exit(failure ? 1 : 0);
 }
 
