@@ -44,6 +44,7 @@
 #include "FontCache.h"
 #include "OffscreenView.h"
 #include "GeometryEvaluator.h"
+#include "openvr.h"
 
 #include <string>
 #include <vector>
@@ -755,6 +756,9 @@ int gui(vector<string> &inputFiles, const fs::path &original_path, int argc, cha
 	}
 
 	app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
+	OpenVR vr;
+	vr.initialize();
+	vr.mainLoop(*mainwin->qglview);
 	int rc = app.exec();
 	for(auto &mainw : scadApp->windowManager.getWindows()) delete mainw;
 	return rc;
