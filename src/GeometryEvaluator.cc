@@ -644,7 +644,7 @@ static void add_slice(PolySet *ps, const Polygon2d &poly,
 			ps->append_poly();
 			
 			// Make sure to split negative outlines correctly
-			if (splitfirst xor !o.positive) {
+			if (splitfirst ^ !o.positive) {
 				ps->insert_vertex(prev1[0], prev1[1], h1);
 				ps->insert_vertex(curr2[0], curr2[1], h2);
 				ps->insert_vertex(curr1[0], curr1[1], h1);
