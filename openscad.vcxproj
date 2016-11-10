@@ -1,0 +1,821 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AB854300-95E3-35AE-9811-85392114E6C0}</ProjectGuid>
+    <RootNamespace>openscad</RootNamespace>
+    <Keyword>Qt4VSv1.0</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <PlatformToolSet>v140</PlatformToolSet>
+    <OutputDirectory>release\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>Application</ConfigurationType>
+    <IntermediateDirectory>objects\</IntermediateDirectory>
+    <PrimaryOutput>openscad</PrimaryOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <PlatformToolSet>v140</PlatformToolSet>
+    <OutputDirectory>debug\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>Application</ConfigurationType>
+    <IntermediateDirectory>objects\</IntermediateDirectory>
+    <PrimaryOutput>openscad</PrimaryOutput>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">openscad</TargetName>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</PostBuildEventUseInBuild>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">openscad</TargetName>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</IgnoreImportLibrary>
+    <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</PostBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ExecutablePath>C:\Program Files %28x86%29\GnuWin32\bin;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\openscad\fontconfig;C:\openscad\glib-2.51.0;C:\openscad\glib-2.51.0\glib;C:\openscad\harfbuzz-1.3.3\src;C:\openscad\QScintilla_gpl-2.9.3\Qt4Qt5;C:\openscad\freeglut\include;C:\GnuWin32\include;C:\openscad\deps\include\eigen3;C:\openscad\CGAL-4.9\auxiliary\gmp\include;C:\local\boost_1_62_0;C:\openscad\deps\include\freetype2;C:\openscad\deps\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\openscad\fontconfig;C:\openscad\glib-2.51.0;C:\openscad\glib-2.51.0\glib;C:\openscad\harfbuzz-1.3.3\src;C:\openscad\QScintilla_gpl-2.9.3\Qt4Qt5;C:\openscad\freeglut\include;C:\GnuWin32\include;C:\openscad\deps\include\eigen3;C:\openscad\CGAL-4.9\auxiliary\gmp\include;C:\local\boost_1_62_0;C:\openscad\deps\include\freetype2;C:\openscad\deps\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\openscad\OpenVR\samples\shared;C:\openscad\OpenVR\headers;.;src;..\..\Qt\5.6\msvc2015_64\include;src\libtess2\Include;..\..\Qt\5.6\msvc2015_64\include\QtOpenGL;..\..\Qt\5.6\msvc2015_64\include\QtPrintSupport;..\..\Qt\5.6\msvc2015_64\include\QtWidgets;..\..\Qt\5.6\msvc2015_64\include\QtGui;..\..\Qt\5.6\msvc2015_64\include\QtANGLE;..\..\Qt\5.6\msvc2015_64\include\QtConcurrent;..\..\Qt\5.6\msvc2015_64\include\QtCore;objects;..\..\Qt\5.6\msvc2015_64\mkspecs\win32-msvc2015;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:strictStrings -Zc:throwingNew /bigobj -std=c++11 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>objects\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <DisableSpecificWarnings>4503;4800;4100;4577;4467;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>objects\</ObjectFileName>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>NOGDI;_CRT_NONSTDC_NO_DEPRECATE;EIGEN_DONT_ALIGN;_WINDOWS;UNICODE;WIN32;WIN64;OPENSCAD_VERSION=2016.11.05;OPENSCAD_SHORTVERSION=2016.11.05;OPENSCAD_YEAR=2016.0;OPENSCAD_MONTH=11.0;OPENSCAD_DAY=05.0;CGAL_DISABLE_ROUNDING_MATH_CHECK;DEBUG;_USE_MATH_DEFINES;NOMINMAX;_CRT_SECURE_NO_WARNINGS;YY_NO_UNISTD_H;__WIN32__;ENABLE_CGAL;ENABLE_OPENCSG;USE_SCINTILLA_EDITOR;QT_NO_DEBUG;QT_OPENGL_LIB;QT_PRINTSUPPORT_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>C:\Qt\5.6\msvc2015_64\lib\qtmain.lib;shell32.lib;libmpfr-4.lib;libgmp-10.lib;opencsg.lib;glew32s.lib;qscintilla2.lib;openvr_api.lib;C:\Qt\5.6\msvc2015_64\lib\Qt5OpenGL.lib;C:\Qt\5.6\msvc2015_64\lib\Qt5PrintSupport.lib;C:\Qt\5.6\msvc2015_64\lib\Qt5Widgets.lib;C:\Qt\5.6\msvc2015_64\lib\Qt5Gui.lib;C:\Qt\5.6\msvc2015_64\lib\Qt5Concurrent.lib;C:\Qt\5.6\msvc2015_64\lib\Qt5Core.lib;libintl-8.lib;freetype.lib;fontconfig.lib;harfbuzz.lib;Shell32.lib;Kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\openscad\OpenVR\lib\win64;C:\openscad\fontconfig\fontconfig\fontconfig\x64\Release\fontconfig;C:\openscad\gettext\bin;C:\openscad\freeglut\lib\x64;C:\local\boost_1_62_0\lib64-msvc-14.0;C:\Qt\5.6\msvc2015_64\lib;C:\utils\my_sql\my_sql\lib;C:\openscad\deps\lib;C:\GnuWin32\lib;C:\openscad\harfbuzz-1.3.3\win32\release\x64;C:\utils\postgresql\pgsql\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+      <LinkIncremental>false</LinkIncremental>
+      <OutputFile>$(OutDir)\openscad.exe</OutputFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <Version>2016.11</Version>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NOGDI;_CRT_NONSTDC_NO_DEPRECATE;EIGEN_DONT_ALIGN;_WINDOWS;UNICODE;WIN32;WIN64;OPENSCAD_VERSION=2016.11.05;OPENSCAD_SHORTVERSION=2016.11.05;OPENSCAD_YEAR=2016.0;OPENSCAD_MONTH=11.0;OPENSCAD_DAY=05.0;CGAL_DISABLE_ROUNDING_MATH_CHECK;DEBUG;_USE_MATH_DEFINES;NOMINMAX;_CRT_SECURE_NO_WARNINGS;YY_NO_UNISTD_H;__WIN32__;ENABLE_CGAL;ENABLE_OPENCSG;USE_SCINTILLA_EDITOR;QT_NO_DEBUG;QT_OPENGL_LIB;QT_PRINTSUPPORT_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>C:/openscad/openscad/scripts/translation-make.sh</Command>
+      <Message>C:/openscad/openscad/scripts/translation-make.sh</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\openscad\OpenVR\samples\shared;C:\openscad\OpenVR\headers;.;src;..\..\Qt\5.6\msvc2015_64\include;src\libtess2\Include;..\..\Qt\5.6\msvc2015_64\include\QtOpenGL;..\..\Qt\5.6\msvc2015_64\include\QtPrintSupport;..\..\Qt\5.6\msvc2015_64\include\QtWidgets;..\..\Qt\5.6\msvc2015_64\include\QtGui;..\..\Qt\5.6\msvc2015_64\include\QtANGLE;..\..\Qt\5.6\msvc2015_64\include\QtConcurrent;..\..\Qt\5.6\msvc2015_64\include\QtCore;objects;..\..\Qt\5.6\msvc2015_64\mkspecs\win32-msvc2015;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:strictStrings -Zc:throwingNew /bigobj -std=c++11 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>objects\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4503;4800;4100;4577;4467;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>objects\</ObjectFileName>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>NOGDI;_CRT_NONSTDC_NO_DEPRECATE;EIGEN_DONT_ALIGN;_WINDOWS;UNICODE;WIN32;WIN64;OPENSCAD_VERSION=2016.11.05;OPENSCAD_SHORTVERSION=2016.11.05;OPENSCAD_YEAR=2016.0;OPENSCAD_MONTH=11.0;OPENSCAD_DAY=05.0;CGAL_DISABLE_ROUNDING_MATH_CHECK;DEBUG;_USE_MATH_DEFINES;NOMINMAX;_CRT_SECURE_NO_WARNINGS;YY_NO_UNISTD_H;__WIN32__;ENABLE_CGAL;ENABLE_OPENCSG;USE_SCINTILLA_EDITOR;QT_OPENGL_LIB;QT_PRINTSUPPORT_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>C:\Qt\5.6\msvc2015_64\lib\qtmain.lib;shell32.lib;libmpfr-4.lib;libgmp-10.lib;opencsg.lib;glew32s.lib;qscintilla2.lib;openvr_api.lib;C:\Qt\5.6\msvc2015_64\lib\Qt5OpenGL.lib;C:\Qt\5.6\msvc2015_64\lib\Qt5PrintSupport.lib;C:\Qt\5.6\msvc2015_64\lib\Qt5Widgets.lib;C:\Qt\5.6\msvc2015_64\lib\Qt5Gui.lib;C:\Qt\5.6\msvc2015_64\lib\Qt5Concurrent.lib;C:\Qt\5.6\msvc2015_64\lib\Qt5Core.lib;libintl-8.lib;freetype.lib;fontconfig.lib;harfbuzz.lib;Shell32.lib;Kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\openscad\OpenVR\lib\win64;C:\openscad\fontconfig\fontconfig\fontconfig\x64\Release\fontconfig;C:\openscad\gettext\bin;C:\openscad\freeglut\lib\x64;C:\local\boost_1_62_0\lib64-msvc-14.0;C:\Qt\5.6\msvc2015_64\lib;C:\utils\my_sql\my_sql\lib;C:\openscad\deps\lib;C:\GnuWin32\lib;C:\openscad\harfbuzz-1.3.3\win32\release\x64;C:\utils\postgresql\pgsql\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+      <OutputFile>$(OutDir)\openscad.exe</OutputFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <Version>2016.11</Version>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NOGDI;_CRT_NONSTDC_NO_DEPRECATE;EIGEN_DONT_ALIGN;_WINDOWS;UNICODE;WIN32;WIN64;OPENSCAD_VERSION=2016.11.05;OPENSCAD_SHORTVERSION=2016.11.05;OPENSCAD_YEAR=2016.0;OPENSCAD_MONTH=11.0;OPENSCAD_DAY=05.0;CGAL_DISABLE_ROUNDING_MATH_CHECK;DEBUG;_USE_MATH_DEFINES;NOMINMAX;_CRT_SECURE_NO_WARNINGS;YY_NO_UNISTD_H;__WIN32__;ENABLE_CGAL;ENABLE_OPENCSG;USE_SCINTILLA_EDITOR;QT_OPENGL_LIB;QT_PRINTSUPPORT_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CONCURRENT_LIB;QT_CORE_LIB;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>C:/openscad/openscad/scripts/translation-make.sh</Command>
+      <Message>C:/openscad/openscad/scripts/translation-make.sh</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\OpenVR\samples\shared\Matrices.cpp" />
+    <ClCompile Include="glib_stub.cpp" />
+    <ClCompile Include="src\AutoUpdater.cc" />
+    <ClCompile Include="src\CGALCache.cc" />
+    <ClCompile Include="src\CGALRenderer.cc" />
+    <ClCompile Include="src\CGAL_Nef_polyhedron.cc" />
+    <ClCompile Include="src\CSGTreeEvaluator.cc" />
+    <ClCompile Include="src\CSGTreeNormalizer.cc" />
+    <ClCompile Include="src\Camera.cc" />
+    <ClCompile Include="src\Dock.cc" />
+    <ClCompile Include="src\DrawingCallback.cc" />
+    <ClCompile Include="src\FontCache.cc" />
+    <ClCompile Include="src\FontListDialog.cc" />
+    <ClCompile Include="src\FontListTableView.cc" />
+    <ClCompile Include="src\FreetypeRenderer.cc" />
+    <ClCompile Include="src\GLView.cc" />
+    <ClCompile Include="src\Geometry.cc" />
+    <ClCompile Include="src\GeometryCache.cc" />
+    <ClCompile Include="src\GeometryEvaluator.cc" />
+    <ClCompile Include="src\GeometryUtils.cc" />
+    <ClCompile Include="src\LibraryInfo.cc" />
+    <ClCompile Include="src\LibraryInfoDialog.cc" />
+    <ClCompile Include="src\ModuleCache.cc" />
+    <ClCompile Include="src\OffscreenContextWGL.cc" />
+    <ClCompile Include="src\OffscreenView.cc" />
+    <ClCompile Include="src\OpenCSGRenderer.cc" />
+    <ClCompile Include="src\OpenCSGWarningDialog.cc" />
+    <ClCompile Include="src\OpenSCADApp.cc" />
+    <ClCompile Include="src\openvr.cc" />
+    <ClCompile Include="src\PlatformUtils-win.cc" />
+    <ClCompile Include="src\PlatformUtils.cc" />
+    <ClCompile Include="src\Polygon2d-CGAL.cc" />
+    <ClCompile Include="src\Polygon2d.cc" />
+    <ClCompile Include="src\Preferences.cc" />
+    <ClCompile Include="src\ProgressWidget.cc" />
+    <ClCompile Include="src\QGLView.cc" />
+    <ClCompile Include="src\ThrownTogetherRenderer.cc" />
+    <ClCompile Include="src\Tree.cc" />
+    <ClCompile Include="src\UIUtils.cc" />
+    <ClCompile Include="src\WindowManager.cc" />
+    <ClCompile Include="src\boost-utils.cc" />
+    <ClCompile Include="src\libtess2\Source\bucketalloc.c" />
+    <ClCompile Include="src\builtin.cc" />
+    <ClCompile Include="src\calc.cc" />
+    <ClCompile Include="src\cgaladv.cc" />
+    <ClCompile Include="src\cgalutils-applyops.cc" />
+    <ClCompile Include="src\cgalutils-polyhedron.cc" />
+    <ClCompile Include="src\cgalutils-project.cc" />
+    <ClCompile Include="src\cgalutils-tess.cc" />
+    <ClCompile Include="src\cgalutils.cc" />
+    <ClCompile Include="src\cgalworker.cc" />
+    <ClCompile Include="src\clipper-utils.cc" />
+    <ClCompile Include="src\polyclipping\clipper.cpp" />
+    <ClCompile Include="src\color.cc" />
+    <ClCompile Include="src\colormap.cc" />
+    <ClCompile Include="src\context.cc" />
+    <ClCompile Include="src\control.cc" />
+    <ClCompile Include="src\csgnode.cc" />
+    <ClCompile Include="src\csgops.cc" />
+    <ClCompile Include="src\libtess2\Source\dict.c" />
+    <ClCompile Include="src\dxfdata.cc" />
+    <ClCompile Include="src\dxfdim.cc" />
+    <ClCompile Include="src\editor.cc" />
+    <ClCompile Include="src\evalcontext.cc" />
+    <ClCompile Include="src\export.cc" />
+    <ClCompile Include="src\export_amf.cc" />
+    <ClCompile Include="src\export_dxf.cc" />
+    <ClCompile Include="src\export_nef.cc" />
+    <ClCompile Include="src\export_off.cc" />
+    <ClCompile Include="src\export_png.cc" />
+    <ClCompile Include="src\export_stl.cc" />
+    <ClCompile Include="src\export_svg.cc" />
+    <ClCompile Include="src\expr.cc" />
+    <ClCompile Include="src\fbo.cc" />
+    <ClCompile Include="src\feature.cc" />
+    <ClCompile Include="src\fileutils.cc" />
+    <ClCompile Include="src\func.cc" />
+    <ClCompile Include="src\libtess2\Source\geom.c" />
+    <ClCompile Include="src\grid.cc" />
+    <ClCompile Include="src\handle_dep.cc" />
+    <ClCompile Include="src\hash.cc" />
+    <ClCompile Include="src\highlighter.cc" />
+    <ClCompile Include="src\imageutils-lodepng.cc" />
+    <ClCompile Include="src\imageutils.cc" />
+    <ClCompile Include="src\import.cc" />
+    <ClCompile Include="src\launchingscreen.cc" />
+    <ClCompile Include="src\legacyeditor.cc" />
+    <ClCompile Include="src\linalg.cc" />
+    <ClCompile Include="src\linearextrude.cc" />
+    <ClCompile Include="src\localscope.cc" />
+    <ClCompile Include="src\lodepng.cpp" />
+    <ClCompile Include="src\mainwin.cc" />
+    <ClCompile Include="src\libtess2\Source\mesh.c" />
+    <ClCompile Include="src\modcontext.cc" />
+    <ClCompile Include="src\module.cc" />
+    <ClCompile Include="src\node.cc" />
+    <ClCompile Include="src\nodedumper.cc" />
+    <ClCompile Include="src\offset.cc" />
+    <ClCompile Include="src\openscad.cc" />
+    <ClCompile Include="src\parsersettings.cc" />
+    <ClCompile Include="src\polyset-gl.cc" />
+    <ClCompile Include="src\polyset-utils.cc" />
+    <ClCompile Include="src\polyset.cc" />
+    <ClCompile Include="src\primitives.cc" />
+    <ClCompile Include="src\printutils.cc" />
+    <ClCompile Include="src\libtess2\Source\priorityq.c" />
+    <ClCompile Include="src\progress.cc" />
+    <ClCompile Include="src\projection.cc" />
+    <ClCompile Include="src\render.cc" />
+    <ClCompile Include="src\renderer.cc" />
+    <ClCompile Include="src\rendersettings.cc" />
+    <ClCompile Include="src\rotateextrude.cc" />
+    <ClCompile Include="src\scadlexer.cpp" />
+    <ClCompile Include="src\scintillaeditor.cpp" />
+    <ClCompile Include="src\settings.cc" />
+    <ClCompile Include="src\stackcheck.cc" />
+    <ClCompile Include="src\stl-utils.cc" />
+    <ClCompile Include="src\surface.cc" />
+    <ClCompile Include="src\svg.cc" />
+    <ClCompile Include="src\libtess2\Source\sweep.c" />
+    <ClCompile Include="src\system-gl.cc" />
+    <ClCompile Include="src\libtess2\Source\tess.c" />
+    <ClCompile Include="src\text.cc" />
+    <ClCompile Include="src\transform.cc" />
+    <ClCompile Include="src\traverser.cc" />
+    <ClCompile Include="src\value.cc" />
+    <ClCompile Include="src\version_check.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\AboutDialog.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\AboutDialog.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\AboutDialog.h -o objects\moc_AboutDialog.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/AboutDialog.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_AboutDialog.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\AboutDialog.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\AboutDialog.h -o objects\moc_AboutDialog.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/AboutDialog.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_AboutDialog.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\AutoUpdater.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\AutoUpdater.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\AutoUpdater.h -o objects\moc_AutoUpdater.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/AutoUpdater.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_AutoUpdater.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\AutoUpdater.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\AutoUpdater.h -o objects\moc_AutoUpdater.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/AutoUpdater.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_AutoUpdater.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="..\OpenVR\samples\shared\Matrices.h" />
+    <ClInclude Include="src\CGALCache.h" />
+    <ClInclude Include="src\CGALRenderer.h" />
+    <ClInclude Include="src\CGAL_Nef3_workaround.h" />
+    <ClInclude Include="src\CGAL_Nef_polyhedron.h" />
+    <ClInclude Include="src\CGAL_OGL_Polyhedron.h" />
+    <ClInclude Include="src\CSGTreeEvaluator.h" />
+    <ClInclude Include="src\CSGTreeNormalizer.h" />
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\CsgInfo.h" />
+    <CustomBuild Include="src\Dock.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\Dock.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\Dock.h -o objects\moc_Dock.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/Dock.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_Dock.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\Dock.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\Dock.h -o objects\moc_Dock.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/Dock.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_Dock.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="src\DrawingCallback.h" />
+    <ClInclude Include="src\FontCache.h" />
+    <CustomBuild Include="src\FontListDialog.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\FontListDialog.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\FontListDialog.h -o objects\moc_FontListDialog.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/FontListDialog.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_FontListDialog.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\FontListDialog.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\FontListDialog.h -o objects\moc_FontListDialog.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/FontListDialog.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_FontListDialog.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\FontListTableView.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\FontListTableView.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\FontListTableView.h -o objects\moc_FontListTableView.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/FontListTableView.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_FontListTableView.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\FontListTableView.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\FontListTableView.h -o objects\moc_FontListTableView.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/FontListTableView.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_FontListTableView.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="src\FreetypeRenderer.h" />
+    <ClInclude Include="src\GLView.h" />
+    <ClInclude Include="src\Geometry.h" />
+    <ClInclude Include="src\GeometryCache.h" />
+    <ClInclude Include="src\GeometryEvaluator.h" />
+    <ClInclude Include="src\GeometryUtils.h" />
+    <ClInclude Include="src\LibraryInfo.h" />
+    <CustomBuild Include="src\LibraryInfoDialog.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\LibraryInfoDialog.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\LibraryInfoDialog.h -o objects\moc_LibraryInfoDialog.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/LibraryInfoDialog.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_LibraryInfoDialog.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\LibraryInfoDialog.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\LibraryInfoDialog.h -o objects\moc_LibraryInfoDialog.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/LibraryInfoDialog.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_LibraryInfoDialog.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\MainWindow.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\MainWindow.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\MainWindow.h -o objects\moc_MainWindow.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/MainWindow.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_MainWindow.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\MainWindow.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\MainWindow.h -o objects\moc_MainWindow.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/MainWindow.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_MainWindow.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="src\ModuleCache.h" />
+    <ClInclude Include="src\OGL_helper.h" />
+    <ClInclude Include="src\OffscreenContext.h" />
+    <ClInclude Include="src\OffscreenContextAll.hpp" />
+    <ClInclude Include="src\OffscreenView.h" />
+    <ClInclude Include="src\OpenCSGRenderer.h" />
+    <CustomBuild Include="src\OpenCSGWarningDialog.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\OpenCSGWarningDialog.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\OpenCSGWarningDialog.h -o objects\moc_OpenCSGWarningDialog.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/OpenCSGWarningDialog.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_OpenCSGWarningDialog.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\OpenCSGWarningDialog.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\OpenCSGWarningDialog.h -o objects\moc_OpenCSGWarningDialog.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/OpenCSGWarningDialog.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_OpenCSGWarningDialog.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenSCADApp.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\OpenSCADApp.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\OpenSCADApp.h -o objects\moc_OpenSCADApp.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/OpenSCADApp.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_OpenSCADApp.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\OpenSCADApp.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\OpenSCADApp.h -o objects\moc_OpenSCADApp.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/OpenSCADApp.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_OpenSCADApp.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="src\openvr.h" />
+    <ClInclude Include="src\Polygon2d-CGAL.h" />
+    <ClInclude Include="src\Polygon2d.h" />
+    <CustomBuild Include="src\Preferences.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\Preferences.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\Preferences.h -o objects\moc_Preferences.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/Preferences.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_Preferences.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\Preferences.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\Preferences.h -o objects\moc_Preferences.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/Preferences.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_Preferences.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\ProgressWidget.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\ProgressWidget.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\ProgressWidget.h -o objects\moc_ProgressWidget.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/ProgressWidget.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_ProgressWidget.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\ProgressWidget.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\ProgressWidget.h -o objects\moc_ProgressWidget.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/ProgressWidget.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_ProgressWidget.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\QGLView.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\QGLView.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\QGLView.h -o objects\moc_QGLView.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/QGLView.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_QGLView.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\QGLView.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\QGLView.h -o objects\moc_QGLView.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/QGLView.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_QGLView.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="src\Reindexer.h" />
+    <ClInclude Include="src\ThrownTogetherRenderer.h" />
+    <ClInclude Include="src\Tree.h" />
+    <CustomBuild Include="src\WindowManager.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\WindowManager.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\WindowManager.h -o objects\moc_WindowManager.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/WindowManager.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_WindowManager.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\WindowManager.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\WindowManager.h -o objects\moc_WindowManager.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/WindowManager.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_WindowManager.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="src\boost-utils.h" />
+    <ClInclude Include="src\libtess2\Source\bucketalloc.h" />
+    <ClInclude Include="src\builtin.h" />
+    <ClInclude Include="src\calc.h" />
+    <ClInclude Include="src\cgal.h" />
+    <ClInclude Include="src\cgaladvnode.h" />
+    <ClInclude Include="src\cgalfwd.h" />
+    <ClInclude Include="src\cgalutils.h" />
+    <CustomBuild Include="src\cgalworker.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\cgalworker.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\cgalworker.h -o objects\moc_cgalworker.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/cgalworker.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_cgalworker.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\cgalworker.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\cgalworker.h -o objects\moc_cgalworker.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/cgalworker.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_cgalworker.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="src\clipper-utils.h" />
+    <ClInclude Include="src\polyclipping\clipper.hpp" />
+    <ClInclude Include="src\colormap.h" />
+    <ClInclude Include="src\colornode.h" />
+    <ClInclude Include="src\context.h" />
+    <ClInclude Include="src\convex_hull_3_bugfix.h" />
+    <ClInclude Include="src\csgnode.h" />
+    <ClInclude Include="src\csgops.h" />
+    <ClInclude Include="src\libtess2\Source\dict.h" />
+    <ClInclude Include="src\dxfdata.h" />
+    <ClInclude Include="src\dxfdim.h" />
+    <CustomBuild Include="src\editor.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\editor.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\editor.h -o objects\moc_editor.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/editor.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_editor.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\editor.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\editor.h -o objects\moc_editor.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/editor.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_editor.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="src\evalcontext.h" />
+    <ClInclude Include="src\exceptions.h" />
+    <ClInclude Include="src\export.h" />
+    <ClInclude Include="src\expression.h" />
+    <ClInclude Include="src\fbo.h" />
+    <ClInclude Include="src\feature.h" />
+    <ClInclude Include="src\fileutils.h" />
+    <ClInclude Include="src\findversion.h" />
+    <ClInclude Include="src\function.h" />
+    <ClInclude Include="src\libtess2\Source\geom.h" />
+    <ClInclude Include="src\grid.h" />
+    <ClInclude Include="src\handle_dep.h" />
+    <ClInclude Include="src\hash.h" />
+    <CustomBuild Include="src\highlighter.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\highlighter.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\highlighter.h -o objects\moc_highlighter.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/highlighter.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_highlighter.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\highlighter.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\highlighter.h -o objects\moc_highlighter.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/highlighter.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_highlighter.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="src\imageutils.h" />
+    <ClInclude Include="src\importnode.h" />
+    <CustomBuild Include="src\launchingscreen.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\launchingscreen.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\launchingscreen.h -o objects\moc_launchingscreen.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/launchingscreen.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_launchingscreen.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\launchingscreen.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\launchingscreen.h -o objects\moc_launchingscreen.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/launchingscreen.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_launchingscreen.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\legacyeditor.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\legacyeditor.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\legacyeditor.h -o objects\moc_legacyeditor.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/legacyeditor.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_legacyeditor.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\legacyeditor.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\legacyeditor.h -o objects\moc_legacyeditor.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/legacyeditor.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_legacyeditor.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="src\linalg.h" />
+    <ClInclude Include="src\linearextrudenode.h" />
+    <ClInclude Include="src\localscope.h" />
+    <ClInclude Include="src\lodepng.h" />
+    <ClInclude Include="src\memory.h" />
+    <ClInclude Include="src\libtess2\Source\mesh.h" />
+    <ClInclude Include="src\modcontext.h" />
+    <ClInclude Include="src\module.h" />
+    <ClInclude Include="src\node.h" />
+    <ClInclude Include="src\nodecache.h" />
+    <ClInclude Include="src\nodedumper.h" />
+    <ClInclude Include="src\offsetnode.h" />
+    <ClInclude Include="src\openscad.h" />
+    <ClInclude Include="src\parsersettings.h" />
+    <ClInclude Include="src\polyset-utils.h" />
+    <ClInclude Include="src\polyset.h" />
+    <ClInclude Include="src\printutils.h" />
+    <ClInclude Include="src\libtess2\Source\priorityq.h" />
+    <ClInclude Include="src\progress.h" />
+    <ClInclude Include="src\projectionnode.h" />
+    <ClInclude Include="src\renderer.h" />
+    <ClInclude Include="src\rendernode.h" />
+    <ClInclude Include="src\rendersettings.h" />
+    <ClInclude Include="src\rotateextrudenode.h" />
+    <ClInclude Include="src\scadlexer.h" />
+    <CustomBuild Include="src\scintillaeditor.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\scintillaeditor.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\scintillaeditor.h -o objects\moc_scintillaeditor.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MOC src/scintillaeditor.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\moc_scintillaeditor.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\scintillaeditor.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DOPENSCAD_VERSION=2016.11.05 -DOPENSCAD_SHORTVERSION=2016.11.05 -DOPENSCAD_YEAR=2016.0 -DOPENSCAD_MONTH=11.0 -DOPENSCAD_DAY=05.0 -DCGAL_DISABLE_ROUNDING_MATH_CHECK -DDEBUG -D_USE_MATH_DEFINES -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DYY_NO_UNISTD_H -D__WIN32__ -DENABLE_CGAL -DENABLE_OPENCSG -DUSE_SCINTILLA_EDITOR -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.6/msvc2015_64/mkspecs/win32-msvc2015 -IC:/openscad/openscad -IC:/openscad/openscad/src -IC:/Qt/5.6/msvc2015_64/include -IC:/openscad/openscad/src/libtess2/Include -IC:/Qt/5.6/msvc2015_64/include/QtOpenGL -IC:/Qt/5.6/msvc2015_64/include/QtPrintSupport -IC:/Qt/5.6/msvc2015_64/include/QtWidgets -IC:/Qt/5.6/msvc2015_64/include/QtGui -IC:/Qt/5.6/msvc2015_64/include/QtANGLE -IC:/Qt/5.6/msvc2015_64/include/QtConcurrent -IC:/Qt/5.6/msvc2015_64/include/QtCore src\scintillaeditor.h -o objects\moc_scintillaeditor.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MOC src/scintillaeditor.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_scintillaeditor.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="src\settings.h" />
+    <ClInclude Include="src\stackcheck.h" />
+    <ClInclude Include="src\state.h" />
+    <ClInclude Include="src\stl-utils.h" />
+    <ClInclude Include="src\svg.h" />
+    <ClInclude Include="src\libtess2\Source\sweep.h" />
+    <ClInclude Include="src\system-gl.h" />
+    <ClInclude Include="src\libtess2\Source\tess.h" />
+    <ClInclude Include="src\libtess2\Include\tesselator.h" />
+    <ClInclude Include="src\textnode.h" />
+    <ClInclude Include="src\transformnode.h" />
+    <ClInclude Include="src\traverser.h" />
+    <ClInclude Include="src\typedefs.h" />
+    <ClInclude Include="src\value.h" />
+    <ClInclude Include="src\version_check.h" />
+    <ClInclude Include="src\visitor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="c:\openscad\openscad\src\lexer.lexer.cpp" />
+    <ClCompile Include="objects\moc_AboutDialog.cpp" />
+    <ClCompile Include="objects\moc_AutoUpdater.cpp" />
+    <ClCompile Include="objects\moc_Dock.cpp" />
+    <ClCompile Include="objects\moc_FontListDialog.cpp" />
+    <ClCompile Include="objects\moc_FontListTableView.cpp" />
+    <ClCompile Include="objects\moc_LibraryInfoDialog.cpp" />
+    <ClCompile Include="objects\moc_MainWindow.cpp" />
+    <ClCompile Include="objects\moc_OpenCSGWarningDialog.cpp" />
+    <ClCompile Include="objects\moc_OpenSCADApp.cpp" />
+    <ClCompile Include="objects\moc_Preferences.cpp" />
+    <ClCompile Include="objects\moc_ProgressWidget.cpp" />
+    <ClCompile Include="objects\moc_QGLView.cpp" />
+    <ClCompile Include="objects\moc_WindowManager.cpp" />
+    <ClCompile Include="objects\moc_cgalworker.cpp" />
+    <ClCompile Include="objects\moc_editor.cpp" />
+    <ClCompile Include="objects\moc_highlighter.cpp" />
+    <ClCompile Include="objects\moc_launchingscreen.cpp" />
+    <ClCompile Include="objects\moc_legacyeditor.cpp" />
+    <ClCompile Include="objects\moc_scintillaeditor.cpp" />
+    <ClCompile Include="c:\openscad\opesncad\src\parser_yacc.cpp" />
+    <ClCompile Include="objects\qrc_openscad.cpp" />
+    <ClInclude Include="objects\ui_AboutDialog.h" />
+    <ClInclude Include="objects\ui_FontListDialog.h" />
+    <ClInclude Include="objects\ui_LibraryInfoDialog.h" />
+    <ClInclude Include="objects\ui_MainWindow.h" />
+    <ClInclude Include="objects\ui_OpenCSGWarningDialog.h" />
+    <ClInclude Include="objects\ui_Preferences.h" />
+    <ClInclude Include="objects\ui_ProgressWidget.h" />
+    <ClInclude Include="objects\ui_launchingscreen.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\AboutDialog.ui">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\AboutDialog.ui;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\AboutDialog.ui -o objects\ui_AboutDialog.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UIC src/AboutDialog.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\ui_AboutDialog.h;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\AboutDialog.ui;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\AboutDialog.ui -o objects\ui_AboutDialog.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UIC src/AboutDialog.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\ui_AboutDialog.h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\FontListDialog.ui">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\FontListDialog.ui;FontListTableView.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\FontListDialog.ui -o objects\ui_FontListDialog.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UIC src/FontListDialog.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\ui_FontListDialog.h;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\FontListDialog.ui;FontListTableView.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\FontListDialog.ui -o objects\ui_FontListDialog.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UIC src/FontListDialog.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\ui_FontListDialog.h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\LibraryInfoDialog.ui">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\LibraryInfoDialog.ui;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\LibraryInfoDialog.ui -o objects\ui_LibraryInfoDialog.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UIC src/LibraryInfoDialog.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\ui_LibraryInfoDialog.h;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\LibraryInfoDialog.ui;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\LibraryInfoDialog.ui -o objects\ui_LibraryInfoDialog.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UIC src/LibraryInfoDialog.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\ui_LibraryInfoDialog.h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\MainWindow.ui">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\MainWindow.ui;QGLView.h;Dock.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\MainWindow.ui -o objects\ui_MainWindow.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UIC src/MainWindow.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\ui_MainWindow.h;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\MainWindow.ui;QGLView.h;Dock.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\MainWindow.ui -o objects\ui_MainWindow.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UIC src/MainWindow.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\ui_MainWindow.h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenCSGWarningDialog.ui">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\OpenCSGWarningDialog.ui;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\OpenCSGWarningDialog.ui -o objects\ui_OpenCSGWarningDialog.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UIC src/OpenCSGWarningDialog.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\ui_OpenCSGWarningDialog.h;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\OpenCSGWarningDialog.ui;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\OpenCSGWarningDialog.ui -o objects\ui_OpenCSGWarningDialog.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UIC src/OpenCSGWarningDialog.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\ui_OpenCSGWarningDialog.h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\Preferences.ui">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\Preferences.ui;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\Preferences.ui -o objects\ui_Preferences.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UIC src/Preferences.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\ui_Preferences.h;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\Preferences.ui;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\Preferences.ui -o objects\ui_Preferences.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UIC src/Preferences.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\ui_Preferences.h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\ProgressWidget.ui">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\ProgressWidget.ui;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\ProgressWidget.ui -o objects\ui_ProgressWidget.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UIC src/ProgressWidget.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\ui_ProgressWidget.h;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\ProgressWidget.ui;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\ProgressWidget.ui -o objects\ui_ProgressWidget.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UIC src/ProgressWidget.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\ui_ProgressWidget.h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\launchingscreen.ui">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">src\launchingscreen.ui;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\launchingscreen.ui -o objects\ui_launchingscreen.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UIC src/launchingscreen.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\ui_launchingscreen.h;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">src\launchingscreen.ui;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\uic.exe src\launchingscreen.ui -o objects\ui_launchingscreen.h -tr _</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UIC src/launchingscreen.ui</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\ui_launchingscreen.h;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="(copy).png" />
+    <None Include="images\AMF-white.png" />
+    <None Include="images\AMF.png" />
+    <None Include="src\AboutDialog.html" />
+    <None Include="images\CSG-white.png" />
+    <None Include="images\CSG.png" />
+    <None Include="images\Command-Redo-32-white.png" />
+    <None Include="images\Command-Redo-32.png" />
+    <None Include="images\Command-Reset-32-white.png" />
+    <None Include="images\Command-Reset-32.png" />
+    <None Include="images\Command-Undo-32-white.png" />
+    <None Include="images\Command-Undo-32.png" />
+    <None Include="images\DXF-white.png" />
+    <None Include="images\DXF.png" />
+    <None Include="images\Decrease-Indent-32-white.png" />
+    <None Include="images\Decrease-Indent-32.png" />
+    <None Include="images\Document-New-128.png" />
+    <None Include="images\Increase-Indent-32-white.png" />
+    <None Include="images\Increase-Indent-32.png" />
+    <None Include="images\OFF-white.png" />
+    <None Include="images\OFF.png" />
+    <None Include="images\Open-128.png" />
+    <None Include="images\Open-32.png" />
+    <None Include="images\PNG-white.png" />
+    <None Include="images\PNG.png" />
+    <None Include="images\Rotation-32.png" />
+    <None Include="images\STL-white.png" />
+    <None Include="images\STL.png" />
+    <None Include="images\SVG-white.png" />
+    <None Include="images\SVG.png" />
+    <None Include="images\Save-128.png" />
+    <None Include="images\Save-32.png" />
+    <None Include="images\Shape-Cube-32.png" />
+    <None Include="images\Zoom-In-32.png" />
+    <None Include="images\Zoom-Out-32.png" />
+    <None Include="images\animate.png" />
+    <None Include="images\axes.png" />
+    <None Include="images\back.png" />
+    <None Include="icons\background-welcome-screen.svg" />
+    <None Include="icons\background.png" />
+    <None Include="images\blackNew.png" />
+    <None Include="images\blackUp.png" />
+    <None Include="images\blackaxes.png" />
+    <None Include="images\blackback.png" />
+    <None Include="images\blackbottom.png" />
+    <None Include="images\blackfront.png" />
+    <None Include="images\blackleft" />
+    <None Include="images\bottom.png" />
+    <None Include="icons\button.png" />
+    <None Include="icons\close.png" />
+    <None Include="images\cross.png" />
+    <None Include="images\crosswhite.png" />
+    <None Include="images\export-white.png" />
+    <None Include="images\export.png" />
+    <None Include="images\front.png" />
+    <None Include="images\grid.png" />
+    <None Include="icons\information-icons-error.png" />
+    <None Include="icons\information-icons-info.png" />
+    <None Include="icons\information-icons-question.png" />
+    <None Include="icons\information-icons-warning.png" />
+    <None Include="images\left.png" />
+    <None Include="icons\openscad-nightly.png" />
+    <None Include="icons\openscad.png" />
+    <None Include="images\openscad.png" />
+    <CustomBuild Include="openscad.qrc">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">openscad.qrc;images\orthogonalwhite.png;images\DXF-white.png;images\Increase-Indent-32.png;images\wireframeWhite.png;images\Shape-Cube-32.png;images\Open-32.png;images\grid.png;images\Zoom-In-32.png;images\left.png;images\zoom-all-white.png;images\zoom-text-in-white.png;images\blackaxes.png;images\Command-Undo-32-white.png;images\Command-Redo-32-white.png;images\DXF.png;images\SVG-white.png;images\perspective1.png;images\back.png;images\CSG-white.png;images\Command-Redo-32.png;images\Save-128.png;images\Command-Reset-32.png;images\Zoom-Out-32.png;images\zoom-text-out.png;images\OFF-white.png;images\render-32-white.png;images\export-white.png;images\render-32.png;images\wireframe1.png;images\zoomout.png;images\surface.png;images\openscad.png;images\Decrease-Indent-32-white.png;images\blackfront.png;images\scalemarkers.png;images\axes.png;images\Command-Undo-32.png;images\STL.png;images\Decrease-Indent-32.png;images\blackUp.png;images\Command-Reset-32-white.png;images\blackbottom.png;images\animate.png;images\rightright.png;images\blackNew.png;images\orthogonal.png;images\STL-white.png;images\up.png;images\zoom-text-in.png;images\zoomin.png;images\perspective1white.png;images\OFF.png;images\AMF.png;images\bottom.png;images\Open-128.png;images\zoom-all.png;images\preview-32-white.png;images\Document-New-128.png;images\Rotation-32.png;images\blackback.png;images\export.png;images\crosswhite.png;images\PNG-white.png;images\Save-32.png;images\Increase-Indent-32-white.png;images\SVG.png;images\surfaceWhite.png;images\preview-32.png;images\cross.png;images\AMF-white.png;images\right.png;images\blackleft (copy).png;images\front.png;images\scalemarkers-white.png;images\CSG.png;images\zoom-text-out-white.png;images\PNG.png;src\AboutDialog.html;icons\background-welcome-screen.svg;icons\close.png;icons\information-icons-question.png;icons\prefsFeatures.png;icons\background.png;icons\openscad.png;icons\stopbutton.png;icons\prefsEditor.png;icons\information-icons-info.png;icons\prefsAdvanced.png;icons\prefs3DView.png;icons\information-icons-error.png;icons\prefsUpdate.png;icons\openscad-nightly.png;icons\information-icons-warning.png;icons\button.png;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Qt\5.6\msvc2015_64\bin\rcc.exe -name openscad openscad.qrc -o objects\qrc_openscad.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">RCC openscad.qrc</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">objects\qrc_openscad.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">openscad.qrc;images\orthogonalwhite.png;images\DXF-white.png;images\Increase-Indent-32.png;images\wireframeWhite.png;images\Shape-Cube-32.png;images\Open-32.png;images\grid.png;images\Zoom-In-32.png;images\left.png;images\zoom-all-white.png;images\zoom-text-in-white.png;images\blackaxes.png;images\Command-Undo-32-white.png;images\Command-Redo-32-white.png;images\DXF.png;images\SVG-white.png;images\perspective1.png;images\back.png;images\CSG-white.png;images\Command-Redo-32.png;images\Save-128.png;images\Command-Reset-32.png;images\Zoom-Out-32.png;images\zoom-text-out.png;images\OFF-white.png;images\render-32-white.png;images\export-white.png;images\render-32.png;images\wireframe1.png;images\zoomout.png;images\surface.png;images\openscad.png;images\Decrease-Indent-32-white.png;images\blackfront.png;images\scalemarkers.png;images\axes.png;images\Command-Undo-32.png;images\STL.png;images\Decrease-Indent-32.png;images\blackUp.png;images\Command-Reset-32-white.png;images\blackbottom.png;images\animate.png;images\rightright.png;images\blackNew.png;images\orthogonal.png;images\STL-white.png;images\up.png;images\zoom-text-in.png;images\zoomin.png;images\perspective1white.png;images\OFF.png;images\AMF.png;images\bottom.png;images\Open-128.png;images\zoom-all.png;images\preview-32-white.png;images\Document-New-128.png;images\Rotation-32.png;images\blackback.png;images\export.png;images\crosswhite.png;images\PNG-white.png;images\Save-32.png;images\Increase-Indent-32-white.png;images\SVG.png;images\surfaceWhite.png;images\preview-32.png;images\cross.png;images\AMF-white.png;images\right.png;images\blackleft (copy).png;images\front.png;images\scalemarkers-white.png;images\CSG.png;images\zoom-text-out-white.png;images\PNG.png;src\AboutDialog.html;icons\background-welcome-screen.svg;icons\close.png;icons\information-icons-question.png;icons\prefsFeatures.png;icons\background.png;icons\openscad.png;icons\stopbutton.png;icons\prefsEditor.png;icons\information-icons-info.png;icons\prefsAdvanced.png;icons\prefs3DView.png;icons\information-icons-error.png;icons\prefsUpdate.png;icons\openscad-nightly.png;icons\information-icons-warning.png;icons\button.png;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Qt\5.6\msvc2015_64\bin\rcc.exe -name openscad openscad.qrc -o objects\qrc_openscad.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">RCC openscad.qrc</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\qrc_openscad.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="images\orthogonal.png" />
+    <None Include="images\orthogonalwhite.png" />
+    <None Include="images\perspective1.png" />
+    <None Include="images\perspective1white.png" />
+    <None Include="icons\prefs3DView.png" />
+    <None Include="icons\prefsAdvanced.png" />
+    <None Include="icons\prefsEditor.png" />
+    <None Include="icons\prefsFeatures.png" />
+    <None Include="icons\prefsUpdate.png" />
+    <None Include="images\preview-32-white.png" />
+    <None Include="images\preview-32.png" />
+    <None Include="images\render-32-white.png" />
+    <None Include="images\render-32.png" />
+    <None Include="images\right.png" />
+    <None Include="images\rightright.png" />
+    <None Include="images\scalemarkers-white.png" />
+    <None Include="images\scalemarkers.png" />
+    <None Include="icons\stopbutton.png" />
+    <None Include="images\surface.png" />
+    <None Include="images\surfaceWhite.png" />
+    <None Include="images\up.png" />
+    <None Include="images\wireframe1.png" />
+    <None Include="images\wireframeWhite.png" />
+    <None Include="images\zoom-all-white.png" />
+    <None Include="images\zoom-all.png" />
+    <None Include="images\zoom-text-in-white.png" />
+    <None Include="images\zoom-text-in.png" />
+    <None Include="images\zoom-text-out-white.png" />
+    <None Include="images\zoom-text-out.png" />
+    <None Include="images\zoomin.png" />
+    <None Include="images\zoomout.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="openscad_win32.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>
