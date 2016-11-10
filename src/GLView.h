@@ -34,10 +34,10 @@ public:
 
 	void initializeGL();
 	void resizeGL(int w, int h);
-	virtual void paintGL();
+	virtual void paintGL(bool withCameraProjection=true);
 
 	void setCamera(const Camera &cam);
-	void setupCamera();
+	void setupCamera(bool withProjection = true);
 
 	void setColorScheme(const ColorScheme &cs);
 	void setColorScheme(const std::string &cs);

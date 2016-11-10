@@ -90,7 +90,8 @@ private:
 	void initializeGL();
 	void resizeGL(int w, int h);
 
-	void paintGL();
+	void paintGL() { paintGL(true); }
+	void paintGL(bool camera);
 	void normalizeAngle(GLdouble& angle);
 
 #ifdef ENABLE_OPENCSG

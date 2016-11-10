@@ -88,32 +88,39 @@ void GLView::setCamera(const Camera &cam)
   this->cam = cam;
 }
 
-void GLView::setupCamera()
+void GLView::setupCamera(bool withProjection)
 {
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-
+	if (withProjection)
+	{
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+	}
 	switch (this->cam.type) {
 	case Camera::GIMBAL: {
 		double dist = cam.zoomValue();
-		switch (this->cam.projection) {
-		case Camera::PERSPECTIVE: {
-			gluPerspective(cam.fov, aspectratio, 0.1*dist, 100*dist);
-			break;
+		if (withProjection)
+		{
+			switch (this->cam.projection) {
+			case Camera::PERSPECTIVE: {
+				gluPerspective(cam.fov, aspectratio, 0.1*dist, 100 * dist);
+				break;
+			}
+			case Camera::ORTHOGONAL: {
+				double height = dist * tan(cam.fov / 2 * M_PI / 180);
+				glOrtho(-height*aspectratio, height*aspectratio,
+					-height, height,
+					-100 * dist, +100 * dist);
+				break;
+			}
+			}
+			gluLookAt(0.0, -dist, 0.0,
+				0.0, 0.0, 0.0,
+				0.0, 0.0, 1.0);
 		}
-		case Camera::ORTHOGONAL: {
-			double height = dist * tan(cam.fov/2*M_PI/180);
-			glOrtho(-height*aspectratio, height*aspectratio,
-							-height, height,
-							-100*dist, +100*dist);
-			break;
-		}
-		}
-		gluLookAt(0.0, -dist, 0.0,
-							0.0, 0.0, 0.0,
-							0.0, 0.0, 1.0);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+		if (!withProjection)
+			glTranslated(0, -dist, 0);
 		glRotated(cam.object_rot.x(), 1.0, 0.0, 0.0);
 		glRotated(cam.object_rot.y(), 0.0, 1.0, 0.0);
 		glRotated(cam.object_rot.z(), 0.0, 0.0, 1.0);
@@ -153,7 +160,7 @@ void GLView::setupCamera()
 	}
 }
 
-void GLView::paintGL()
+void GLView::paintGL(bool proj)
 {
   glDisable(GL_LIGHTING);
 
@@ -162,7 +169,7 @@ void GLView::paintGL()
   glClearColor(bgcol[0], bgcol[1], bgcol[2], 1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-  setupCamera();
+  setupCamera(proj);
   if (this->cam.type == Camera::GIMBAL) {
     // Only for GIMBAL cam
     // The crosshair should be fixed at the center of the viewport...

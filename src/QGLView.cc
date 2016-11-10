@@ -165,9 +165,9 @@ void QGLView::resizeGL(int w, int h)
   GLView::resizeGL(w,h);
 }
 
-void QGLView::paintGL()
+void QGLView::paintGL(bool camera)
 {
-  GLView::paintGL();
+  GLView::paintGL(camera);
 
   if (statusLabel) {
     Camera nc(cam);
