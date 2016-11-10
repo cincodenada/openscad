@@ -125,6 +125,7 @@
 #include "FontCache.h"
 #include "transformnode.h"
 
+#undef sprintf
 // Global application state
 unsigned int GuiLocker::gui_locked = 0;
 
@@ -867,7 +868,7 @@ void MainWindow::updateTVal()
 		this->anim_tval = 0.0;
 	}
 	QString txt;
-	txt.sprintf("%.5f", this->anim_tval);
+	txt.asprintf("%.5f", this->anim_tval);
 	this->e_tval->setText(txt);
 }
 
@@ -1481,14 +1482,14 @@ void MainWindow::actionReload()
 void MainWindow::pasteViewportTranslation()
 {
 	QString txt;
-	txt.sprintf("[ %.2f, %.2f, %.2f ]", -qglview->cam.object_trans.x(), -qglview->cam.object_trans.y(), -qglview->cam.object_trans.z());
+	txt.asprintf("[ %.2f, %.2f, %.2f ]", -qglview->cam.object_trans.x(), -qglview->cam.object_trans.y(), -qglview->cam.object_trans.z());
 	this->editor->insert(txt);
 }
 
 void MainWindow::pasteViewportRotation()
 {
 	QString txt;
-	txt.sprintf("[ %.2f, %.2f, %.2f ]",
+	txt.asprintf("[ %.2f, %.2f, %.2f ]",
 		fmodf(360 - qglview->cam.object_rot.x() + 90, 360),
 		fmodf(360 - qglview->cam.object_rot.y(), 360),
 		fmodf(360 - qglview->cam.object_rot.z(), 360));
@@ -1866,7 +1867,7 @@ void MainWindow::csgRender()
 			glReadBuffer(GL_FRONT);
 			QImage img = this->qglview->grabFrameBuffer();
 			QString filename;
-			filename.sprintf("frame%05d.png", this->anim_step);
+			filename.asprintf("frame%05d.png", this->anim_step);
 			img.save(filename, "PNG");
 		}
 	}
@@ -2797,7 +2798,7 @@ QString updateTranslate(QString text, double dx, double dy, double dz)
     if (diffs[i] != 0)
     {
       QString s = qr.cap(1+i);
-      std::cerr << s.toAscii().constData() << std::endl;
+      std::cerr << s.toLatin1().constData() << std::endl;
       QRegExp plus("\\s*\\+\\s*(-?[0-9.]+)$");
       int p = plus.indexIn(s);
       if (p == -1)
@@ -2815,12 +2816,12 @@ QString updateTranslate(QString text, double dx, double dy, double dz)
 
 QString updateMove(QString text, int field, double delta)
 {
-  std::cerr << "TEXT: " << text.toAscii().constData() << std::endl;
+  std::cerr << "TEXT: " << text.toLatin1().constData() << std::endl;
   QRegExp qr("\\(([^)]*)\\)");
   int p = qr.indexIn(text);
   if (p == -1)
     return text;
-  std::cerr << "CAP: " << qr.cap(1).toAscii().constData() << std::endl;
+  std::cerr << "CAP: " << qr.cap(1).toLatin1().constData() << std::endl;
   QStringList fields = qr.cap(1).split(",");
   std::cerr << "FIELD: " << fields.size() << std::endl;
   if (fields.size() != 9)
