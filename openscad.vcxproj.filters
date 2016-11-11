@@ -815,7 +815,6 @@
     <ClInclude Include="src\visitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="c:\openscad\opesncad\src\parser.y" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="c:\openscad\openscad\src\lexer.lexer.cpp">
