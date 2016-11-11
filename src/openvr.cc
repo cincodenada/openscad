@@ -1,9 +1,15 @@
 #include "openvr.h"
+#include "QGLView.h"
+#include "OpenCSGRenderer.h"
 #include <QApplication>
+#include <set>
 
 OpenVR::OpenVR()
+	: target{0,0,0}
+	, angles{0,0,0}
 {
 	m_pHMD = NULL;
+	distance = 0;
 }
 
 void OpenVR::initialize()
@@ -24,6 +30,7 @@ void OpenVR::initialize()
 	m_mat4ProjectionRight = GetHMDMatrixProjectionEye(vr::Eye_Right);
 	m_mat4eyePosLeft = GetHMDMatrixPoseEye(vr::Eye_Left);
 	m_mat4eyePosRight = GetHMDMatrixPoseEye(vr::Eye_Right);
+	time.start();
 }
 
 bool OpenVR::CreateFrameBuffer(int nWidth, int nHeight, FramebufferDesc &framebufferDesc)
@@ -85,7 +92,39 @@ void OpenVR::RenderScene(GLView& v, vr::Hmd_Eye nEye)
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(GetCurrentViewProjectionMatrix(nEye).get());
 	glMatrixMode(GL_MODELVIEW);
-	v.paintGL(false);
+	glTranslated(distance, 0, 0);
+	glRotated(angles[0], 1, 0, 0);
+	glRotated(angles[1], 0, 1, 0);
+	glRotated(angles[2], 0, 0, 1);
+	glTranslated(target[0], target[1], target[2]);
+	v.paintGL(false, false);
+}
+
+unsigned int OpenVR::pick(GLView& v)
+{
+	auto& q = dynamic_cast<QGLView&>(v);
+	OpenCSGRenderer* o = dynamic_cast<OpenCSGRenderer*>(q.getRenderer());
+	if (!o)
+		return 0;
+	o->setPicking(true);
+	int width = v.cam.pixel_width;
+	int height = v.cam.pixel_height;
+	glViewport(0, 0, width, height);
+	RenderScene(v, vr::Eye_Left);
+	glGetError();
+	unsigned int hit = 0;
+	glReadPixels(width / 2, height / 2,
+		1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &hit);
+	auto err = glGetError();
+	if (err != GL_NO_ERROR)
+	{
+		std::cerr << "READPIXELS: " << err << std::endl;
+		std::cerr << gluErrorString(err) << std::endl;
+	}
+	hit = ((hit & 0xFC) >> 2) + ((hit & 0xFC00) >> 4) + ((hit & 0xFC0000) >> 6);
+    std::cerr << hit << std::endl;
+	o->setPicking(false);
+	return hit;
 }
 
 void OpenVR::renderFrame(GLView& v)
@@ -107,7 +146,6 @@ void OpenVR::renderFrame(GLView& v)
 	glBlitFramebuffer(0, 0, m_nRenderWidth, m_nRenderHeight, 0, 0, m_nRenderWidth, m_nRenderHeight,
 		GL_COLOR_BUFFER_BIT,
 		GL_LINEAR);
-
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
@@ -220,12 +258,50 @@ Matrix4 OpenVR::GetHMDMatrixPoseEye(vr::Hmd_Eye nEye)
 	return matrixObj.invert();
 }
 
+void OpenVR::updatePad(double elapsed)
+{
+	double dx = gamePad.axisLeftX() * elapsed * dps;
+	double dy = gamePad.axisLeftY() * elapsed * dps;
+	angles[0] += dx;
+	angles[1] += dy;
+	angles[2] += gamePad.buttonL1() * elapsed * dps;
+	angles[2] -= gamePad.buttonL2() * elapsed * dps;
+	target[0] += gamePad.axisRightX() * elapsed * tps;
+	target[1] += gamePad.axisRightY() * elapsed * tps;
+	target[2] += gamePad.buttonR1() * elapsed * tps;
+	target[2] -= gamePad.buttonR2() * elapsed * tps;
+	distance += gamePad.buttonUp() * elapsed * distps;
+	distance -= gamePad.buttonDown() * elapsed * distps;
+
+}
 void OpenVR::mainLoop(GLView& v)
 {
+	auto& q = dynamic_cast<QGLView&>(v);
 	while (true)
 	{
 		QApplication::processEvents();
 		UpdateHMDMatrixPose();
+		double elapsed = time.restart() / 1000.0;
+		if (gamePad.buttonX())
+		{
+			unsigned int id = pick(v);
+			
+			if (id > 0 && id < 65000)
+			{
+				int prev = q.last_pick_id;
+				q.last_pick_id = id;
+				emit q.pickedObject(id, prev, Qt::ControlModifier);
+			}
+		}
+		else if (gamePad.buttonY())
+		{
+			double dx = gamePad.axisLeftX() * elapsed * dps;
+			double dy = gamePad.axisLeftY() * elapsed * dps;
+			emit q.dragObject(q.last_pick_id, 0, dx, dx, Qt::MouseButton::LeftButton, 0);
+			emit q.dragObject(q.last_pick_id, 1, dy, dy, Qt::MouseButton::LeftButton, 0);
+		}
+		else
+			updatePad(elapsed);
 		renderFrame(v);
 	}
 }

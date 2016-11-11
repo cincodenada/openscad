@@ -1,5 +1,7 @@
 #pragma once
 #include <openvr.h>
+#include <QGamePad>
+#include <QTime>
 #include "renderer.h"
 #include "GLView.h"
 #include "Matrices.h"
@@ -13,7 +15,14 @@ public:
 	void mainLoop(GLView& r);
 	bool enabled() { return m_pHMD; }
 	void UpdateHMDMatrixPose();
+	QGamepad gamePad;
+	QTime time;
+	const double dps = 60;
+	const double tps = 10;
+	const double distps = 10;
 private:
+	void updatePad(double elapsed);
+	unsigned int pick(GLView& v);
 	Matrix4 ConvertSteamVRMatrixToMatrix4(const vr::HmdMatrix34_t &matPose);
 	Matrix4 GetCurrentViewProjectionMatrix(vr::Hmd_Eye nEye);
 	void RenderScene(GLView& v, vr::Hmd_Eye nEye);
@@ -44,4 +53,9 @@ private:
 	Matrix4 m_mat4ProjectionCenter;
 	Matrix4 m_mat4ProjectionLeft;
 	Matrix4 m_mat4ProjectionRight;
+
+	// POV
+	double target[3];
+	double distance;
+	double angles[3];
 };
