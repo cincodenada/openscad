@@ -33,8 +33,6 @@
 #ifdef ENABLE_OPENCSG
 #  include <opencsg.h>
 
-#include <GL/glut.h>
-
 class OpenCSGPrim : public OpenCSG::Primitive
 {
 public:
@@ -79,7 +77,41 @@ static void gl_pick_color(unsigned int id)
 
 static const int handle_pick_id = 65000;
 
+static void solidCube()
+{
+	glBegin(GL_QUADS);
+	const float d = 0.5;
+	glVertex3f(-d, -d, -d);
+	glVertex3f(-d, -d, d);
+	glVertex3f(-d, d, d);
+	glVertex3f(-d, d, -d);
 
+	glVertex3f(-d, -d, -d);
+	glVertex3f(d, -d, -d);
+	glVertex3f(d, d, -d);
+	glVertex3f(-d, d, -d);
+
+	glVertex3f(-d, -d, -d);
+	glVertex3f(-d, -d, d);
+	glVertex3f(d, -d, d);
+	glVertex3f(d, -d, -d);
+
+	glVertex3f(d, -d, -d);
+	glVertex3f(d, -d, d);
+	glVertex3f(d, d, d);
+	glVertex3f(d, d, -d);
+
+	glVertex3f(-d, -d, d);
+	glVertex3f(d, -d, d);
+	glVertex3f(d, d, d);
+	glVertex3f(-d, d, d);
+
+	glVertex3f(-d, d, -d);
+	glVertex3f(-d, d, d);
+	glVertex3f(d, d, d);
+	glVertex3f(d, d, -d);
+	glEnd();
+}
 static void drawHandles(bool picking, double x=1, double y=1, double z=1)
 {
   glDisable(GL_LIGHTING);
@@ -92,7 +124,7 @@ static void drawHandles(bool picking, double x=1, double y=1, double z=1)
   {
     PushMatrix pm2;
     glScalef(x, w, w);
-    glutSolidCube(1.0);
+    solidCube();
   }
   if (picking)
     gl_pick_color(handle_pick_id+1);
@@ -101,7 +133,7 @@ static void drawHandles(bool picking, double x=1, double y=1, double z=1)
   {
     PushMatrix pm2;
     glScalef(w, y, w);
-    glutSolidCube(1.0);
+    solidCube();
   }
   if (picking)
     gl_pick_color(handle_pick_id+2);
@@ -110,7 +142,7 @@ static void drawHandles(bool picking, double x=1, double y=1, double z=1)
   {
     PushMatrix pm2;
     glScalef(w, w, z);
-    glutSolidCube(1.0);
+    solidCube();
   }
   glEnable(GL_LIGHTING);
 }
