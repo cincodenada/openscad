@@ -160,7 +160,7 @@ void GLView::setupCamera(bool withProjection)
 	}
 }
 
-void GLView::paintGL(bool proj)
+void GLView::paintGL(bool withCam, bool withProj)
 {
   glDisable(GL_LIGHTING);
 
@@ -169,12 +169,14 @@ void GLView::paintGL(bool proj)
   glClearColor(bgcol[0], bgcol[1], bgcol[2], 1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-  setupCamera(proj);
-  if (this->cam.type == Camera::GIMBAL) {
+  if (withCam)
+	setupCamera(withProj);
+  if (withCam && this->cam.type == Camera::GIMBAL) {
     // Only for GIMBAL cam
     // The crosshair should be fixed at the center of the viewport...
     if (showcrosshairs) GLView::showCrosshairs();
-    glTranslated(cam.object_trans.x(), cam.object_trans.y(), cam.object_trans.z());
+	if (withCam)
+		glTranslated(cam.object_trans.x(), cam.object_trans.y(), cam.object_trans.z());
     // ...the axis lines need to follow the object translation.
     if (showaxes) GLView::showAxes(axescolor);
     // mark the scale along the axis lines

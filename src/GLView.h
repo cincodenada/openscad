@@ -34,7 +34,7 @@ public:
 
 	void initializeGL();
 	void resizeGL(int w, int h);
-	virtual void paintGL(bool withCameraProjection=true);
+	virtual void paintGL(bool withCamera = true, bool withCameraProjection=true);
 
 	void setCamera(const Camera &cam);
 	void setupCamera(bool withProjection = true);
