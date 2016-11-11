@@ -98,6 +98,7 @@ private slots:
 	void showProgress();
 	void openCSGSettingsChanged();
 	void consoleOutput(const QString &msg);
+public slots:
 	void compile(bool reload, bool forcedone = false, bool dont_signal = false);
 private:
         void initActionIcon(QAction *action, const char *darkResource, const char *lightResource);

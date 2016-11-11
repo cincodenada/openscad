@@ -3066,6 +3066,7 @@ void MainWindow::insertObject(int sibling_id, Primitive what, bool centered)
 	editor->setSelection(QRect(beg, beg));
 }
 
+static const bool bFalse = false;
 void MainWindow::dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers)
 {
   std::cerr << "drag " << id << " " << axis << " " << dx <<" " << dy << std::endl;
@@ -3086,17 +3087,20 @@ void MainWindow::dragObject(int id, int axis, double dx, double dy, int buttons,
 	  Location loc = node->modinst->getLocation();
 	  editor->setSelection(QRect(QPoint(loc.first_column - 1, loc.first_line - 1),
 	    QPoint(loc.first_column - 1, loc.first_line - 1)));
-	  editor->replaceSelectedText("move(0,0,0, 0,0,0, 1,1,1)");
+	  editor->replaceSelectedText("move(0,0,0, 0,0,0, 1,1,1) ");
 	  // that definitely requires a recompile
 	  //compile(false, false, false);
-	  int mid = metaObject()->indexOfMethod("compile(bool, bool, bool)");
+	  int mid = metaObject()->indexOfMethod("compile(bool,bool,bool)");
 	  QMetaMethod method = metaObject()->method(mid);
-	  method.invoke(this, Qt::QueuedConnection, Q_ARG(bool, false),
-	                Q_ARG(bool, false),
-	                Q_ARG(bool, false));
+	  if (mid == -1)
+		  throw std::runtime_error("compile method not found");
+	  if (!method.invoke(this, Qt::QueuedConnection, Q_ARG(bool, bFalse),
+		  Q_ARG(bool, bFalse),
+		  Q_ARG(bool, bFalse)))
+		  throw std::runtime_error("Failed to invoke compile method");
 	  //if (this->root_node) compileCSG(false, true);
 	  //viewModePreview();
-	  prevCursor.setX(prevCursor.x() + strlen("move(0,0,0, 0,0,0, 1,1,1)"));
+	  prevCursor.setX(prevCursor.x() + strlen("move(0,0,0, 0,0,0, 1,1,1) "));
 	  editor->setSelection(QRect(prevCursor, prevCursor));
 	  return;
 	}
