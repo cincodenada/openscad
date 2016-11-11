@@ -51,6 +51,7 @@
 #include <fstream>
 
 #ifdef ENABLE_CGAL
+#undef foreach
 #include "CGAL_Nef_polyhedron.h"
 #include "cgalutils.h"
 #endif
@@ -61,6 +62,7 @@
 #include <sstream>
 
 #include "Camera.h"
+
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -92,6 +94,7 @@ std::string commandline_commands;
 std::string currentdir;
 static bool arg_info = false;
 static std::string arg_colorscheme;
+static bool enable_vr = false;
 
 #define QUOTE(x__) # x__
 #define QUOTED(x__) QUOTE(x__)
@@ -756,10 +759,15 @@ int gui(vector<string> &inputFiles, const fs::path &original_path, int argc, cha
 	}
 
 	app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
-	OpenVR vr;
-	vr.initialize();
-	vr.mainLoop(*mainwin->qglview);
-	int rc = app.exec();
+	int rc = 0;
+	if (enable_vr)
+	{
+		OpenVR vr;
+		vr.initialize();
+		vr.mainLoop(*mainwin->qglview);
+	}
+	else
+		rc = app.exec();
 	for(auto &mainw : scadApp->windowManager.getWindows()) delete mainw;
 	return rc;
 }
@@ -813,6 +821,7 @@ int main(int argc, char **argv)
 		("colorscheme", po::value<string>(), "colorscheme")
 		("debug", po::value<string>(), "special debug info")
 		("quiet,q", "quiet mode (don't print anything *except* errors)")
+		("enable-vr", "enable openVR mode")
 		("o,o", po::value<string>(), "out-file")
 		("s,s", po::value<string>(), "stl-file")
 		("x,x", po::value<string>(), "dxf-file")
@@ -844,6 +853,7 @@ int main(int argc, char **argv)
 	}
 
 	OpenSCAD::debug = "";
+	enable_vr = vm.count("enable-vr");
 	if (vm.count("debug")) {
 		OpenSCAD::debug = vm["debug"].as<string>();
 		PRINTB("Debug on. --debug=%s",OpenSCAD::debug);
