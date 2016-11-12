@@ -19,7 +19,9 @@ public:
 	QTime time;
 	const double dps = 60;
 	const double tps = 10;
+	const double sps = 10;
 	const double distps = 10;
+	const double dragFactor = 5;
 private:
 	void updatePad(double elapsed);
 	unsigned int pick(GLView& v);

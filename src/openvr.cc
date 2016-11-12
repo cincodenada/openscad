@@ -292,13 +292,31 @@ void OpenVR::mainLoop(GLView& v)
 				q.last_pick_id = id;
 				emit q.pickedObject(id, prev, Qt::ControlModifier);
 			}
+			else
+				q.last_pick_id = 0;
 		}
-		else if (gamePad.buttonY())
+		else if (gamePad.buttonY() || gamePad.buttonA() || gamePad.buttonB())
 		{
-			double dx = gamePad.axisLeftX() * elapsed * dps;
-			double dy = gamePad.axisLeftY() * elapsed * dps;
-			emit q.dragObject(q.last_pick_id, 0, dx, dx, Qt::MouseButton::LeftButton, 0);
-			emit q.dragObject(q.last_pick_id, 1, dy, dy, Qt::MouseButton::LeftButton, 0);
+			bool tie = gamePad.buttonR1();
+			double factor = dragFactor; // gamePad.buttonY() ? tps : gamePad.buttonA() ? dps : sps;
+			auto mod = gamePad.buttonA() ? Qt::AltModifier : gamePad.buttonB() ? Qt::ShiftModifier : 0;
+			double dx = gamePad.axisLeftX() * elapsed * factor;
+			double dy = gamePad.axisLeftY() * elapsed * factor;
+			double dz = gamePad.buttonL1() * elapsed * factor;
+			dz -= gamePad.buttonL2() * elapsed * factor;
+			if (tie)
+				dy = dz = dx+dy;
+			emit q.dragObject(q.last_pick_id, 0, dx, dx, Qt::MouseButton::LeftButton, mod);
+			emit q.dragObject(q.last_pick_id, 1, dy, dy, Qt::MouseButton::LeftButton, mod);
+			emit q.dragObject(q.last_pick_id, 2, dz, dz, Qt::MouseButton::LeftButton, mod);
+		}
+		else if (q.last_pick_id &&
+			(gamePad.buttonLeft() || gamePad.buttonRight() || gamePad.buttonUp() || gamePad.buttonDown()))
+		{
+			int key = gamePad.buttonLeft() ? Qt::Key_Left : gamePad.buttonRight() ? Qt::Key_Right
+				: gamePad.buttonUp() ? Qt::Key_Up : Qt::Key_Down;
+			Qt::KeyboardModifiers mod = 0;
+			emit q.keyPress(key, mod);
 		}
 		else
 			updatePad(elapsed);
