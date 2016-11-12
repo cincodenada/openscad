@@ -36,6 +36,7 @@ GLView::GLView()
   opencsg_support = true;
   static int sId = 0;
   this->opencsg_id = sId++;
+  sId++; //allocate two context ids
   for (int i = 0; i < 10; i++) this->shaderinfo[i] = 0;
 #endif
 }
@@ -193,7 +194,7 @@ void GLView::paintGL(bool withCam, bool withProj)
   if (this->renderer) {
 #if defined(ENABLE_OPENCSG)
     // FIXME: This belongs in the OpenCSG renderer, but it doesn't know about this ID yet
-    OpenCSG::setContext(this->opencsg_id);
+    OpenCSG::setContext(this->opencsg_id + (withCam ? 0 : 1) );
 #endif
     this->renderer->draw(showfaces, showedges);
   }
