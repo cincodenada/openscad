@@ -1,11 +1,73 @@
 #pragma once
 #include <openvr.h>
+#include "GLView.h"
 #include <QGamePad>
 #include <QTime>
+#include <QTimer>
+#include <QOpenGLContext>
+#include <QGLFormat>
+#include <QOpenGLFrameBufferObject>
+#include <QOffscreenSurface>
+#include <QGraphicsScene>
 #include "renderer.h"
-#include "GLView.h"
+
 #include "Matrices.h"
 
+class Debouncer
+{
+public:
+	Debouncer(float repeatPeriod = 0.5f)
+		: repeatPeriod(repeatPeriod)
+		, lastState(false)
+		, outputState(false)
+		, repeating(false)
+	{
+		timer.start();
+	}
+	bool state() { return outputState; }
+	operator bool() { return state(); }
+	bool feed(bool newState);
+	bool isRepeating() { return repeating; }
+private:
+	float repeatPeriod;
+	QTime timer;
+	bool lastState;
+	bool outputState;
+	bool repeating;
+};
+
+class Overlay
+{
+public:
+	Overlay(QString name, QOpenGLContext* ctx);
+	void setWidget(QWidget *pWidget);
+	void show();
+	void hide();
+	void onTimeoutPumpEvents();
+	void onSceneChanged();
+	QGraphicsScene *m_pScene;
+	vr::VROverlayHandle_t m_ulOverlayHandle;
+private:
+	vr::HmdError m_eCompositorError;
+	vr::HmdError m_eOverlayError, m_eLastHmdError;
+	vr::Compositor_OverlaySettings m_overlaySettings;
+	
+	vr::VROverlayHandle_t m_ulOverlayThumbnailHandle;
+
+	QOpenGLContext *m_pOpenGLContext;
+
+	QOpenGLFramebufferObject *m_pFbo;
+	QOffscreenSurface *m_pOffscreenSurface;
+
+	QTimer *m_pPumpEventsTimer;
+
+	// the widget we're drawing into the texture
+	QWidget *m_pWidget;
+
+	QPointF m_ptLastMouse;
+	Qt::MouseButtons m_lastMouseButtons;
+	bool m_bManualMouseHandling;
+};
 class OpenVR
 {
 public:
@@ -21,7 +83,7 @@ public:
 	const double tps = 10;
 	const double sps = 10;
 	const double distps = 10;
-	const double dragFactor = 5;
+	const double dragFactor = 20;
 private:
 	void updatePad(double elapsed);
 	unsigned int pick(GLView& v);
@@ -60,4 +122,11 @@ private:
 	double target[3];
 	double distance;
 	double angles[3];
+	// button state
+	Debouncer buttonL, buttonR, buttonU, buttonD, buttonX, buttonY;
+
+	// overlays
+public:
+	QList<Overlay*> overlays; //fixme accessors
+	QTime overlayEvents;
 };

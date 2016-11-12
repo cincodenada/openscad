@@ -2,7 +2,44 @@
 #include "QGLView.h"
 #include "OpenCSGRenderer.h"
 #include <QApplication>
+#include <QOpenglPaintDevice>
+#include <QGraphicsSceneMouseEvent>
+#include <QOpenGLWidget>
 #include <set>
+#include <QPushButton>
+#include <QVBoxLayout>
+/* TODO
+- when cursor is in spaces, no object is selected
+- VR object create
+- VR object move
+*/
+
+
+class VRMenu : public QWidget
+{
+public:
+	VRMenu();
+	QPushButton* bOk, * bCancel;
+	QVBoxLayout* layout;
+};
+
+VRMenu::VRMenu()
+{
+	layout = new QVBoxLayout();
+	setLayout(layout);
+	bOk = new QPushButton("OK");
+	bCancel = new QPushButton("Cancel");
+	layout->addWidget(bOk);
+	layout->addWidget(bCancel);
+	setStyleSheet("background-color:black;");
+	QPalette pal = palette();
+	pal.setColor(QPalette::Window, Qt::black);
+	this->setPalette(pal);
+	setAutoFillBackground(true);
+	bOk->show();
+	bCancel->show();
+	show();
+}
 
 OpenVR::OpenVR()
 	: target{0,0,0}
@@ -10,6 +47,7 @@ OpenVR::OpenVR()
 {
 	m_pHMD = NULL;
 	distance = 0;
+	overlayEvents.start();
 }
 
 void OpenVR::initialize()
@@ -103,6 +141,7 @@ void OpenVR::RenderScene(GLView& v, vr::Hmd_Eye nEye)
 unsigned int OpenVR::pick(GLView& v)
 {
 	auto& q = dynamic_cast<QGLView&>(v);
+	q.makeCurrent();
 	OpenCSGRenderer* o = dynamic_cast<OpenCSGRenderer*>(q.getRenderer());
 	if (!o)
 		return 0;
@@ -129,6 +168,8 @@ unsigned int OpenVR::pick(GLView& v)
 
 void OpenVR::renderFrame(GLView& v)
 {
+	auto& q = dynamic_cast<QGLView&>(v);
+	q.makeCurrent();
 	glClearColor(0.15f, 0.15f, 0.18f, 1.0f); // nice background color, but not black
 	glEnable(GL_MULTISAMPLE);
 
@@ -272,17 +313,64 @@ void OpenVR::updatePad(double elapsed)
 	target[2] -= gamePad.buttonR2() * elapsed * tps;
 	distance += gamePad.buttonUp() * elapsed * distps;
 	distance -= gamePad.buttonDown() * elapsed * distps;
-
 }
+
 void OpenVR::mainLoop(GLView& v)
 {
 	auto& q = dynamic_cast<QGLView&>(v);
+	auto* vrm = new VRMenu();
+	auto* over = new Overlay("menu", q.context());// nullptr);
+	vrm->repaint();
+	over->setWidget(vrm);
+	QBrush brush;
+	brush.setColor(Qt::red);
+	over->m_pScene->addRect(5, 5, 500, 500, QPen(), brush);
+	over->m_pScene->setBackgroundBrush(Qt::blue);
+	
+	vr::HmdMatrix34_t mat;
+	memset(mat.m, 0, sizeof(mat.m));
+	/*
+	mat.m[0][0] = 1;
+	mat.m[1][1] = 1;
+	mat.m[2][2] = 1;
+	//mat.m[2][3] = 2;
+	vr::VROverlay()->SetOverlayTransformAbsolute(
+		over->m_ulOverlayHandle,
+		vr::TrackingUniverseOrigin::TrackingUniverseSeated,
+		&mat);
+	*/
+	vr::TrackingUniverseOrigin orig;
+	vr::VROverlay()->GetOverlayTransformAbsolute(over->m_ulOverlayHandle, &orig, &mat);
+	for (int i = 0; i < 3; ++i)
+		std::cerr << mat.m[i][0] << ' ' << mat.m[i][1] << ' ' << mat.m[i][2] << "  " << mat.m[i][3] << std::endl;
+	overlays.push_back(over);
+	over->onSceneChanged();
 	while (true)
 	{
+		if (overlayEvents.elapsed() > 20)
+		{
+			//for (auto& o : overlays)
+			//	o->onTimeoutPumpEvents();
+			overlayEvents.restart();
+			//over->onSceneChanged();
+		}
 		QApplication::processEvents();
 		UpdateHMDMatrixPose();
 		double elapsed = time.restart() / 1000.0;
-		if (gamePad.buttonX())
+		buttonL.feed(gamePad.buttonLeft());
+		buttonR.feed(gamePad.buttonRight());
+		buttonU.feed(gamePad.buttonUp());
+		buttonD.feed(gamePad.buttonDown());
+		buttonX.feed(gamePad.buttonX());
+		buttonY.feed(gamePad.buttonY());
+		if (buttonY.isRepeating())
+			over->hide();
+		if (buttonX.isRepeating())
+		{
+			over->show();
+			over->onSceneChanged();
+		}
+		if (buttonX)
 		{
 			unsigned int id = pick(v);
 			
@@ -298,7 +386,8 @@ void OpenVR::mainLoop(GLView& v)
 		else if (gamePad.buttonY() || gamePad.buttonA() || gamePad.buttonB())
 		{
 			bool tie = gamePad.buttonR1();
-			double factor = dragFactor; // gamePad.buttonY() ? tps : gamePad.buttonA() ? dps : sps;
+			bool slow = gamePad.buttonR2();
+			double factor = dragFactor * (slow? 0.2 : 1.0); // gamePad.buttonY() ? tps : gamePad.buttonA() ? dps : sps;
 			auto mod = gamePad.buttonA() ? Qt::AltModifier : gamePad.buttonB() ? Qt::ShiftModifier : 0;
 			double dx = gamePad.axisLeftX() * elapsed * factor;
 			double dy = gamePad.axisLeftY() * elapsed * factor;
@@ -311,10 +400,10 @@ void OpenVR::mainLoop(GLView& v)
 			emit q.dragObject(q.last_pick_id, 2, dz, dz, Qt::MouseButton::LeftButton, mod);
 		}
 		else if (q.last_pick_id &&
-			(gamePad.buttonLeft() || gamePad.buttonRight() || gamePad.buttonUp() || gamePad.buttonDown()))
+			(buttonL || buttonR || buttonU ||  buttonD))
 		{
-			int key = gamePad.buttonLeft() ? Qt::Key_Left : gamePad.buttonRight() ? Qt::Key_Right
-				: gamePad.buttonUp() ? Qt::Key_Up : Qt::Key_Down;
+			int key = buttonL ? Qt::Key_Left : buttonR ? Qt::Key_Right
+				: buttonU ? Qt::Key_Up : Qt::Key_Down;
 			Qt::KeyboardModifiers mod = 0;
 			emit q.keyPress(key, mod);
 		}
@@ -322,4 +411,261 @@ void OpenVR::mainLoop(GLView& v)
 			updatePad(elapsed);
 		renderFrame(v);
 	}
+}
+
+bool Debouncer::feed(bool newState)
+{
+	if (!newState)
+	{
+		lastState = outputState = repeating = false;
+		timer.restart();
+	}
+	else if (!lastState)
+	{
+		timer.restart();
+		lastState = outputState = true;
+	}
+	else if (outputState)
+	{
+		outputState = false;
+		timer.restart();
+	}
+	else if (timer.elapsed() / 1000.0f > repeatPeriod)
+	{
+		repeating = true;
+		outputState = true;
+	}
+	return outputState;
+}
+
+
+Overlay::Overlay(QString name, QOpenGLContext* ctx)
+: m_eLastHmdError(vr::VRInitError_None)
+, m_eCompositorError(vr::VRInitError_None)
+, m_eOverlayError(vr::VRInitError_None)
+, m_pOpenGLContext(ctx)
+, m_pScene(NULL)
+, m_pOffscreenSurface(NULL)
+, m_pFbo(NULL)
+, m_pWidget(NULL)
+, m_pPumpEventsTimer(NULL)
+, m_lastMouseButtons(0)
+, m_ulOverlayHandle(vr::k_ulOverlayHandleInvalid)
+, m_bManualMouseHandling(false)
+{
+	bool bSuccess = true;
+	if (!ctx)
+	{
+		QSurfaceFormat format;
+		format.setMajorVersion(4);
+		format.setMinorVersion(1);
+		format.setProfile(QSurfaceFormat::CompatibilityProfile);
+
+		m_pOpenGLContext = new QOpenGLContext();
+		m_pOpenGLContext->setFormat(format);
+		bSuccess = m_pOpenGLContext->create();
+		if (!bSuccess)
+			throw std::runtime_error("Unable to create context");
+	}
+	// create an offscreen surface to attach the context and FBO to
+	m_pOffscreenSurface = new QOffscreenSurface();
+	m_pOffscreenSurface->create();
+	m_pOpenGLContext->makeCurrent(m_pOffscreenSurface);
+
+	m_pScene = new QGraphicsScene();
+	QObject::connect(m_pScene, &QGraphicsScene::changed, [this] { this->onSceneChanged(); });
+	//connect(m_pScene, SIGNAL(changed(const QList<QRectF>&)), this, SLOT(OnSceneChanged(const QList<QRectF>&)));
+
+	bSuccess = bSuccess && vr::VRCompositor() != NULL;
+
+	if (vr::VROverlay())
+	{
+		std::string sKey = std::string("openscad.") + name.toStdString();
+		vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(sKey.c_str(), sKey.c_str(), &m_ulOverlayHandle);
+		bSuccess = bSuccess && overlayError == vr::VROverlayError_None;
+	}
+
+	if (bSuccess)
+	{
+		vr::VROverlay()->SetOverlayColor(m_ulOverlayHandle, 0.2, 0.4, 0.6);
+		vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 1.5f);
+		vr::VROverlay()->SetOverlayInputMethod(m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse);
+		vr::VROverlay()->SetOverlayAlpha(m_ulOverlayHandle, 0.5);
+		/*
+		m_pPumpEventsTimer = new QTimer(this);
+		m_pPumpEventsTimer->connect(m_pPumpEventsTimer, &QTimer::timeout),
+			[this] {this->onTimeoutPumpEvents(); });
+		m_pPumpEventsTimer->setInterval(20);
+		m_pPumpEventsTimer->start();
+		*/
+	}
+	if (!bSuccess)
+		throw std::runtime_error("Overlay initialization failure");
+}
+
+void Overlay::setWidget(QWidget *pWidget)
+{
+	std::cerr << "setwidget " << (!!m_pScene) << " " << pWidget->width() << " " << pWidget->height() << std::endl;
+	if (m_pScene)
+	{
+		// all of the mouse handling stuff requires that the widget be at 0,0
+		pWidget->move(0, 0);
+		m_pScene->addWidget(pWidget);
+	}
+	m_pWidget = pWidget;
+
+	m_pFbo = new QOpenGLFramebufferObject(pWidget->width(), pWidget->height(), GL_TEXTURE_2D);
+
+	if (vr::VROverlay())
+	{
+		vr::HmdVector2_t vecWindowSize =
+		{
+			(float)pWidget->width(),
+			(float)pWidget->height()
+		};
+		vr::VROverlay()->SetOverlayMouseScale(m_ulOverlayHandle, &vecWindowSize);
+	}
+}
+void Overlay::show()
+{
+	vr::VROverlay()->ShowOverlay(m_ulOverlayHandle);
+}
+void Overlay::hide()
+{
+	vr::VROverlay()->HideOverlay(m_ulOverlayHandle);
+}
+
+void Overlay::onTimeoutPumpEvents()
+{
+	if (!vr::VRSystem())
+		return;
+	std::cerr << "pumping events" << std::endl;
+
+	if (m_bManualMouseHandling)
+	{
+		// tell OpenVR to make some events for us
+		for (vr::TrackedDeviceIndex_t unDeviceId = 1; unDeviceId < vr::k_unControllerStateAxisCount; unDeviceId++)
+		{
+			if (vr::VROverlay()->HandleControllerOverlayInteractionAsMouse(m_ulOverlayHandle, unDeviceId))
+			{
+				break;
+			}
+		}
+	}
+
+	vr::VREvent_t vrEvent;
+	while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayHandle, &vrEvent, sizeof(vrEvent)))
+	{
+		switch (vrEvent.eventType)
+		{
+		case vr::VREvent_MouseMove:
+		{
+			QPointF ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+			QPoint ptGlobal = ptNewMouse.toPoint();
+			QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseMove);
+			mouseEvent.setWidget(NULL);
+			mouseEvent.setPos(ptNewMouse);
+			mouseEvent.setScenePos(ptGlobal);
+			mouseEvent.setScreenPos(ptGlobal);
+			mouseEvent.setLastPos(m_ptLastMouse);
+			mouseEvent.setLastScenePos(m_pWidget->mapToGlobal(m_ptLastMouse.toPoint()));
+			mouseEvent.setLastScreenPos(m_pWidget->mapToGlobal(m_ptLastMouse.toPoint()));
+			mouseEvent.setButtons(m_lastMouseButtons);
+			mouseEvent.setButton(Qt::NoButton);
+			mouseEvent.setModifiers(0);
+			mouseEvent.setAccepted(false);
+
+			m_ptLastMouse = ptNewMouse;
+			QApplication::sendEvent(m_pScene, &mouseEvent);
+
+			onSceneChanged();
+		}
+		break;
+
+		case vr::VREvent_MouseButtonDown:
+		{
+			Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
+
+			m_lastMouseButtons |= button;
+
+			QPoint ptGlobal = m_ptLastMouse.toPoint();
+			QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMousePress);
+			mouseEvent.setWidget(NULL);
+			mouseEvent.setPos(m_ptLastMouse);
+			mouseEvent.setButtonDownPos(button, m_ptLastMouse);
+			mouseEvent.setButtonDownScenePos(button, ptGlobal);
+			mouseEvent.setButtonDownScreenPos(button, ptGlobal);
+			mouseEvent.setScenePos(ptGlobal);
+			mouseEvent.setScreenPos(ptGlobal);
+			mouseEvent.setLastPos(m_ptLastMouse);
+			mouseEvent.setLastScenePos(ptGlobal);
+			mouseEvent.setLastScreenPos(ptGlobal);
+			mouseEvent.setButtons(m_lastMouseButtons);
+			mouseEvent.setButton(button);
+			mouseEvent.setModifiers(0);
+			mouseEvent.setAccepted(false);
+
+			QApplication::sendEvent(m_pScene, &mouseEvent);
+		}
+		break;
+
+		case vr::VREvent_MouseButtonUp:
+		{
+			Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
+			m_lastMouseButtons &= ~button;
+
+			QPoint ptGlobal = m_ptLastMouse.toPoint();
+			QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseRelease);
+			mouseEvent.setWidget(NULL);
+			mouseEvent.setPos(m_ptLastMouse);
+			mouseEvent.setScenePos(ptGlobal);
+			mouseEvent.setScreenPos(ptGlobal);
+			mouseEvent.setLastPos(m_ptLastMouse);
+			mouseEvent.setLastScenePos(ptGlobal);
+			mouseEvent.setLastScreenPos(ptGlobal);
+			mouseEvent.setButtons(m_lastMouseButtons);
+			mouseEvent.setButton(button);
+			mouseEvent.setModifiers(0);
+			mouseEvent.setAccepted(false);
+
+			QApplication::sendEvent(m_pScene, &mouseEvent);
+		}
+		break;
+
+		case vr::VREvent_OverlayShown:
+		{
+			m_pWidget->repaint();
+		}
+		break;
+
+		case vr::VREvent_Quit:
+			QApplication::exit();
+			break;
+		}
+	}
+}
+
+void Overlay::onSceneChanged()
+{
+	if (!vr::VROverlay() ||
+		!vr::VROverlay()->IsOverlayVisible(m_ulOverlayHandle))
+		return;
+	std::cerr << "VISIBLE " << std::endl;
+	m_pOpenGLContext->makeCurrent(m_pOffscreenSurface);
+	m_pFbo->bind();
+	{
+		QOpenGLPaintDevice device(m_pFbo->size());
+		QPainter painter(&device);
+
+		m_pScene->render(&painter);
+	}
+	m_pFbo->release();
+	//m_pOpenGLContext->doneCurrent();
+	GLuint unTexture = m_pFbo->texture();
+	if (unTexture != 0)
+	{
+		vr::Texture_t texture = { (void*)unTexture, vr::API_OpenGL, vr::ColorSpace_Auto };
+		vr::VROverlay()->SetOverlayTexture(m_ulOverlayHandle, &texture);
+	}
+
 }
