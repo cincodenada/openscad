@@ -8,10 +8,12 @@
 #include <set>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QGraphicsRectItem>
 /* TODO
 - when cursor is in spaces, no object is selected
 - VR object create
 - VR object move
+- VR proper scaling& scale control (openvr is in meters, openscad in milimeters)
 */
 
 
@@ -19,25 +21,36 @@ class VRMenu : public QWidget
 {
 public:
 	VRMenu();
-	QPushButton* bOk, * bCancel;
+	QPushButton* iSphere, * iCube, *iCylinder;
+	QPushButton* tUnion, *tIntersection, *tDifference;
 	QVBoxLayout* layout;
+	
 };
 
 VRMenu::VRMenu()
 {
 	layout = new QVBoxLayout();
 	setLayout(layout);
-	bOk = new QPushButton("OK");
-	bCancel = new QPushButton("Cancel");
-	layout->addWidget(bOk);
-	layout->addWidget(bCancel);
-	setStyleSheet("background-color:black;");
+	layout->addWidget(new QLabel("insert"));
+	auto ilayout = new QHBoxLayout();
+	ilayout->addWidget(iSphere = new QPushButton("sphere"));
+	ilayout->addWidget(iCube = new QPushButton("cube"));
+	ilayout->addWidget(iCylinder = new QPushButton("cylinder"));
+	layout->addLayout(ilayout);
+	layout->addWidget(new QLabel("set type"));
+	auto tlayout = new QHBoxLayout();
+	tlayout->addWidget(tUnion = new QPushButton("union"));
+	tlayout->addWidget(tIntersection = new QPushButton("intersection"));
+	tlayout->addWidget(tDifference = new QPushButton("difference"));
+	layout->addLayout(tlayout);
+	//setStyleSheet("background-color:black;");
+	//bOk->setStyleSheet("background-color:red");
+	/*
 	QPalette pal = palette();
 	pal.setColor(QPalette::Window, Qt::black);
 	this->setPalette(pal);
 	setAutoFillBackground(true);
-	bOk->show();
-	bCancel->show();
+	*/
 	show();
 }
 
@@ -138,18 +151,17 @@ void OpenVR::RenderScene(GLView& v, vr::Hmd_Eye nEye)
 	v.paintGL(false, false);
 }
 
-unsigned int OpenVR::pick(GLView& v)
+unsigned int OpenVR::pick()
 {
-	auto& q = dynamic_cast<QGLView&>(v);
-	q.makeCurrent();
-	OpenCSGRenderer* o = dynamic_cast<OpenCSGRenderer*>(q.getRenderer());
+	q->makeCurrent();
+	OpenCSGRenderer* o = dynamic_cast<OpenCSGRenderer*>(q->getRenderer());
 	if (!o)
 		return 0;
 	o->setPicking(true);
-	int width = v.cam.pixel_width;
-	int height = v.cam.pixel_height;
+	int width = q->cam.pixel_width;
+	int height = q->cam.pixel_height;
 	glViewport(0, 0, width, height);
-	RenderScene(v, vr::Eye_Left);
+	RenderScene(*q, vr::Eye_Left);
 	glGetError();
 	unsigned int hit = 0;
 	glReadPixels(width / 2, height / 2,
@@ -259,7 +271,10 @@ Matrix4 OpenVR::ConvertSteamVRMatrixToMatrix4(const vr::HmdMatrix34_t &matPose)
 		matPose.m[0][0], matPose.m[1][0], matPose.m[2][0], 0.0,
 		matPose.m[0][1], matPose.m[1][1], matPose.m[2][1], 0.0,
 		matPose.m[0][2], matPose.m[1][2], matPose.m[2][2], 0.0,
-		matPose.m[0][3], matPose.m[1][3], matPose.m[2][3], 1.0f
+		matPose.m[0][3],//*100,
+		matPose.m[1][3],//*100,
+		matPose.m[2][3],//*100,
+		1.0f
 	);
 	return matrixObj;
 }
@@ -311,112 +326,165 @@ void OpenVR::updatePad(double elapsed)
 	target[1] += gamePad.axisRightY() * elapsed * tps;
 	target[2] += gamePad.buttonR1() * elapsed * tps;
 	target[2] -= gamePad.buttonR2() * elapsed * tps;
-	distance += gamePad.buttonUp() * elapsed * distps;
-	distance -= gamePad.buttonDown() * elapsed * distps;
+	if (q->last_pick_id <= 0)
+	{
+		distance += gamePad.buttonUp() * elapsed * distps;
+		distance -= gamePad.buttonDown() * elapsed * distps;
+	}
+}
+
+void OpenVR::processPad()
+{
+	double elapsed = time.restart() / 1000.0;
+	buttonL.feed(gamePad.buttonLeft());
+	buttonR.feed(gamePad.buttonRight());
+	buttonU.feed(gamePad.buttonUp());
+	buttonD.feed(gamePad.buttonDown());
+	buttonX.feed(gamePad.buttonX());
+	buttonY.feed(gamePad.buttonY());
+	if (gamePad.buttonX() && gamePad.buttonY())
+		menuOverlay->hide();
+	if (gamePad.buttonA() && gamePad.buttonB())
+	{
+		menuOverlay->show();
+		menuOverlay->onSceneChanged();
+	}
+	if (buttonX.isReleased())
+	{
+		unsigned int id = pick();
+
+		if (id > 0 && id < 65000)
+		{
+			int prev = q->last_pick_id;
+			q->last_pick_id = id;
+			emit q->pickedObject(id, prev, Qt::ControlModifier);
+		}
+		else
+			q->last_pick_id = 0;
+	}
+	else if (buttonX.isRepeating())
+	{
+		unsigned int id = pick();
+		if (id > 0 && id < 65000)
+		{
+			int prev = q->last_pick_id;
+			q->last_pick_id = id;
+			int modifiers = Qt::ShiftModifier;
+			if (gamePad.buttonR1())
+				modifiers |= Qt::AltModifier;
+			emit q->pickedObject(id, prev, modifiers);
+		}
+	}
+	else if (gamePad.buttonY() || gamePad.buttonA() || gamePad.buttonB())
+	{
+		bool tie = gamePad.buttonR1();
+		bool slow = gamePad.buttonR2();
+		// A scale ALT
+		// Y translate nomod
+		// B rotate SHIFT
+		double factor = dragFactor * (slow ? 0.2 : 1.0) * gamePad.buttonY() ? 10.0 : gamePad.buttonA() ? 0.4 : 2;
+		auto mod = gamePad.buttonA() ? Qt::AltModifier : gamePad.buttonB() ? Qt::ShiftModifier : 0;
+		double dx = gamePad.axisLeftX() * elapsed * factor;
+		double dy = gamePad.axisLeftY() * elapsed * factor;
+		double dz = gamePad.buttonL1() * elapsed * factor;
+		dz -= gamePad.buttonL2() * elapsed * factor;
+		if (tie)
+			dy = dz = dx + dy;
+		emit q->dragObject(q->last_pick_id, 0, dx, dx, Qt::MouseButton::LeftButton, mod);
+		emit q->dragObject(q->last_pick_id, 1, dy, dy, Qt::MouseButton::LeftButton, mod);
+		emit q->dragObject(q->last_pick_id, 2, dz, dz, Qt::MouseButton::LeftButton, mod);
+	}
+	else if (q->last_pick_id > 0 &&
+		(buttonL || buttonR || buttonU || buttonD))
+	{
+		int key = buttonL ? Qt::Key_Left : buttonR ? Qt::Key_Right
+			: buttonU ? Qt::Key_Up : Qt::Key_Down;
+		Qt::KeyboardModifiers mod = 0;
+		emit q->keyPress(key, mod);
+	}
+	else
+		updatePad(elapsed);
+}
+void OpenVR::createMenu()
+{
+	menu = new VRMenu();
+	menuOverlay = new Overlay("menu", q->context());
+	menuOverlay->setWidget(menu);
+	overlays.push_back(menuOverlay);
+	vr::HmdMatrix34_t mat;
+	memset(mat.m, 0, sizeof(mat.m));
+	vr::TrackingUniverseOrigin orig;
+	vr::VROverlay()->GetOverlayTransformAbsolute(menuOverlay->m_ulOverlayHandle, &orig, &mat);
+	for (int i = 0; i < 3; ++i)
+		std::cerr << mat.m[i][0] << ' ' << mat.m[i][1] << ' ' << mat.m[i][2] << "  " << mat.m[i][3] << std::endl;
+	mat.m[2][3] = -2;
+	vr::VROverlay()->SetOverlayTransformAbsolute(
+		menuOverlay->m_ulOverlayHandle,
+		vr::TrackingUniverseOrigin::TrackingUniverseSeated,
+		&mat);
+	QObject::connect(menu->iCube, &QPushButton::clicked, [this] {
+		emit q->keyPress(Qt::Key_C, 0); });
+	QObject::connect(menu->iCylinder, &QPushButton::clicked, [this] {
+		emit q->keyPress(Qt::Key_Y, 0); });
+	QObject::connect(menu->iSphere, &QPushButton::clicked, [this] {
+		emit q->keyPress(Qt::Key_S, 0); });
+	QObject::connect(menu->tUnion, &QPushButton::clicked, [this] {
+		emit q->keyPress(Qt::Key_U, 0); });
+	QObject::connect(menu->tIntersection, &QPushButton::clicked, [this] {
+		emit q->keyPress(Qt::Key_I, 0); });
+	QObject::connect(menu->tDifference, &QPushButton::clicked, [this] {
+		emit q->keyPress(Qt::Key_D, 0); });
 }
 
 void OpenVR::mainLoop(GLView& v)
 {
-	auto& q = dynamic_cast<QGLView&>(v);
-	auto* vrm = new VRMenu();
-	auto* over = new Overlay("menu", q.context());// nullptr);
-	vrm->repaint();
-	over->setWidget(vrm);
-	QBrush brush;
-	brush.setColor(Qt::red);
-	over->m_pScene->addRect(5, 5, 500, 500, QPen(), brush);
-	over->m_pScene->setBackgroundBrush(Qt::blue);
-	
-	vr::HmdMatrix34_t mat;
-	memset(mat.m, 0, sizeof(mat.m));
-	/*
-	mat.m[0][0] = 1;
-	mat.m[1][1] = 1;
-	mat.m[2][2] = 1;
-	//mat.m[2][3] = 2;
-	vr::VROverlay()->SetOverlayTransformAbsolute(
-		over->m_ulOverlayHandle,
-		vr::TrackingUniverseOrigin::TrackingUniverseSeated,
-		&mat);
-	*/
-	vr::TrackingUniverseOrigin orig;
-	vr::VROverlay()->GetOverlayTransformAbsolute(over->m_ulOverlayHandle, &orig, &mat);
-	for (int i = 0; i < 3; ++i)
-		std::cerr << mat.m[i][0] << ' ' << mat.m[i][1] << ' ' << mat.m[i][2] << "  " << mat.m[i][3] << std::endl;
-	overlays.push_back(over);
-	over->onSceneChanged();
+	q = dynamic_cast<QGLView*>(&v);
+	createMenu();
 	while (true)
 	{
 		if (overlayEvents.elapsed() > 20)
 		{
-			//for (auto& o : overlays)
-			//	o->onTimeoutPumpEvents();
+			auto p = - (m_mat4HMDPose * Vector4(0, 0, 0, 1));
+			auto inverted = m_mat4HMDPose;
+			inverted.invert();
+			auto d = inverted * Vector4(0, 0, -1, 0);
+			std::cerr << "eye at " << p << "  ->  " << d << std::endl;
+			vr::VROverlayIntersectionParams_t intersect;
+			intersect.vSource.v[0] = p.x;
+			intersect.vSource.v[1] = p.y;
+			intersect.vSource.v[2] = p.z;
+			intersect.vDirection.v[0] = d.x;
+			intersect.vDirection.v[1] = d.y;
+			intersect.vDirection.v[2] = d.z;
+			intersect.eOrigin = vr::TrackingUniverseSeated;
+			bool overlayHit = false;
+			Qt::MouseButtons buttons;
+			if (gamePad.buttonX())
+				buttons |= Qt::LeftButton;
+			if (gamePad.buttonY())
+				buttons |= Qt::RightButton;
+			for (auto& o : overlays)
+			{
+				o->onTimeoutPumpEvents();
+				overlayHit |= o->checkMouse(intersect, buttons);	
+			}
+			if (!overlayHit)
+				processPad();
 			overlayEvents.restart();
-			//over->onSceneChanged();
 		}
 		QApplication::processEvents();
 		UpdateHMDMatrixPose();
-		double elapsed = time.restart() / 1000.0;
-		buttonL.feed(gamePad.buttonLeft());
-		buttonR.feed(gamePad.buttonRight());
-		buttonU.feed(gamePad.buttonUp());
-		buttonD.feed(gamePad.buttonDown());
-		buttonX.feed(gamePad.buttonX());
-		buttonY.feed(gamePad.buttonY());
-		if (buttonY.isRepeating())
-			over->hide();
-		if (buttonX.isRepeating())
-		{
-			over->show();
-			over->onSceneChanged();
-		}
-		if (buttonX)
-		{
-			unsigned int id = pick(v);
-			
-			if (id > 0 && id < 65000)
-			{
-				int prev = q.last_pick_id;
-				q.last_pick_id = id;
-				emit q.pickedObject(id, prev, Qt::ControlModifier);
-			}
-			else
-				q.last_pick_id = 0;
-		}
-		else if (gamePad.buttonY() || gamePad.buttonA() || gamePad.buttonB())
-		{
-			bool tie = gamePad.buttonR1();
-			bool slow = gamePad.buttonR2();
-			double factor = dragFactor * (slow? 0.2 : 1.0); // gamePad.buttonY() ? tps : gamePad.buttonA() ? dps : sps;
-			auto mod = gamePad.buttonA() ? Qt::AltModifier : gamePad.buttonB() ? Qt::ShiftModifier : 0;
-			double dx = gamePad.axisLeftX() * elapsed * factor;
-			double dy = gamePad.axisLeftY() * elapsed * factor;
-			double dz = gamePad.buttonL1() * elapsed * factor;
-			dz -= gamePad.buttonL2() * elapsed * factor;
-			if (tie)
-				dy = dz = dx+dy;
-			emit q.dragObject(q.last_pick_id, 0, dx, dx, Qt::MouseButton::LeftButton, mod);
-			emit q.dragObject(q.last_pick_id, 1, dy, dy, Qt::MouseButton::LeftButton, mod);
-			emit q.dragObject(q.last_pick_id, 2, dz, dz, Qt::MouseButton::LeftButton, mod);
-		}
-		else if (q.last_pick_id &&
-			(buttonL || buttonR || buttonU ||  buttonD))
-		{
-			int key = buttonL ? Qt::Key_Left : buttonR ? Qt::Key_Right
-				: buttonU ? Qt::Key_Up : Qt::Key_Down;
-			Qt::KeyboardModifiers mod = 0;
-			emit q.keyPress(key, mod);
-		}
-		else
-			updatePad(elapsed);
+		
 		renderFrame(v);
 	}
 }
 
 bool Debouncer::feed(bool newState)
 {
+	released = false;
 	if (!newState)
 	{
+		released = lastState;
 		lastState = outputState = repeating = false;
 		timer.restart();
 	}
@@ -451,7 +519,8 @@ Overlay::Overlay(QString name, QOpenGLContext* ctx)
 , m_pPumpEventsTimer(NULL)
 , m_lastMouseButtons(0)
 , m_ulOverlayHandle(vr::k_ulOverlayHandleInvalid)
-, m_bManualMouseHandling(false)
+, m_bManualMouseHandling(true)
+, m_cursor(nullptr)
 {
 	bool bSuccess = true;
 	if (!ctx)
@@ -473,6 +542,7 @@ Overlay::Overlay(QString name, QOpenGLContext* ctx)
 	m_pOpenGLContext->makeCurrent(m_pOffscreenSurface);
 
 	m_pScene = new QGraphicsScene();
+	m_pScene->setBackgroundBrush(Qt::gray);
 	QObject::connect(m_pScene, &QGraphicsScene::changed, [this] { this->onSceneChanged(); });
 	//connect(m_pScene, SIGNAL(changed(const QList<QRectF>&)), this, SLOT(OnSceneChanged(const QList<QRectF>&)));
 
@@ -487,10 +557,10 @@ Overlay::Overlay(QString name, QOpenGLContext* ctx)
 
 	if (bSuccess)
 	{
-		vr::VROverlay()->SetOverlayColor(m_ulOverlayHandle, 0.2, 0.4, 0.6);
+		//vr::VROverlay()->SetOverlayColor(m_ulOverlayHandle, 0.2, 0.4, 0.6);
 		vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 1.5f);
 		vr::VROverlay()->SetOverlayInputMethod(m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse);
-		vr::VROverlay()->SetOverlayAlpha(m_ulOverlayHandle, 0.5);
+		//vr::VROverlay()->SetOverlayAlpha(m_ulOverlayHandle, 0.5);
 		/*
 		m_pPumpEventsTimer = new QTimer(this);
 		m_pPumpEventsTimer->connect(m_pPumpEventsTimer, &QTimer::timeout),
@@ -511,6 +581,7 @@ void Overlay::setWidget(QWidget *pWidget)
 		// all of the mouse handling stuff requires that the widget be at 0,0
 		pWidget->move(0, 0);
 		m_pScene->addWidget(pWidget);
+		m_cursor = m_pScene->addRect(5, 5, 2, 2, QPen(), QBrush());
 	}
 	m_pWidget = pWidget;
 
@@ -535,11 +606,58 @@ void Overlay::hide()
 	vr::VROverlay()->HideOverlay(m_ulOverlayHandle);
 }
 
+bool Overlay::checkMouse(vr::VROverlayIntersectionParams_t const& parms, Qt::MouseButtons buttons)
+{
+	vr::VROverlayIntersectionResults_t ires;
+	bool hit = vr::VROverlay()->ComputeOverlayIntersection(m_ulOverlayHandle, &parms, &ires);
+	if (hit)
+	{
+		float px = ires.vUVs.v[0] * m_pScene->width();
+		float py = (1.0 - ires.vUVs.v[1]) * m_pScene->height();
+		if (m_cursor)
+		{
+			m_cursor->show();
+			// dont grow the scene rect
+			px = std::min(px, (float)m_pScene->width() - 2);
+			py = std::min(py, (float)m_pScene->height() - 2);
+			m_cursor->setPos(px, py);
+		}
+		auto prevLastButtons = m_lastMouseButtons;
+		bool newbuttons = buttons & ~m_lastMouseButtons;
+		bool removedbuttons = m_lastMouseButtons & ~buttons;
+		m_lastMouseButtons = buttons;
+		QGraphicsSceneMouseEvent ev(
+			newbuttons ? QEvent::GraphicsSceneMousePress
+			: removedbuttons ? QEvent::GraphicsSceneMouseRelease
+			: QEvent::GraphicsSceneMouseMove);
+		QPointF pos(px, py);
+		QPoint ipos = pos.toPoint();
+		ev.setWidget(NULL);
+		ev.setPos(pos);
+		ev.setScenePos(pos);
+		ev.setScreenPos(ipos);
+		ev.setLastPos(m_ptLastMouse);
+		ev.setLastScenePos(m_pWidget->mapToGlobal(m_ptLastMouse.toPoint()));
+		ev.setLastScreenPos(m_pWidget->mapToGlobal(m_ptLastMouse.toPoint()));
+		ev.setButtons(m_lastMouseButtons);
+		ev.setButton(newbuttons ? ((buttons & Qt::LeftButton) ? Qt::LeftButton : Qt::RightButton)
+			: removedbuttons ? ((prevLastButtons & Qt::LeftButton) ? Qt::LeftButton : Qt::RightButton)
+			: Qt::NoButton
+		);
+		ev.setModifiers(0);
+		ev.setAccepted(false);
+		m_ptLastMouse = pos;
+		QApplication::sendEvent(m_pScene, &ev);
+	}
+	else if (m_cursor)
+		m_cursor->hide();
+	return hit;
+}
+
 void Overlay::onTimeoutPumpEvents()
 {
 	if (!vr::VRSystem())
 		return;
-	std::cerr << "pumping events" << std::endl;
 
 	if (m_bManualMouseHandling)
 	{

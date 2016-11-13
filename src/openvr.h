@@ -1,6 +1,6 @@
 #pragma once
 #include <openvr.h>
-#include "GLView.h"
+#include "QGLView.h"
 #include <QGamePad>
 #include <QTime>
 #include <QTimer>
@@ -12,11 +12,12 @@
 #include "renderer.h"
 
 #include "Matrices.h"
+#include "Vectors.h"
 
 class Debouncer
 {
 public:
-	Debouncer(float repeatPeriod = 0.5f)
+	Debouncer(float repeatPeriod = 1.0f)
 		: repeatPeriod(repeatPeriod)
 		, lastState(false)
 		, outputState(false)
@@ -28,12 +29,14 @@ public:
 	operator bool() { return state(); }
 	bool feed(bool newState);
 	bool isRepeating() { return repeating; }
+	bool isReleased() { return released; }
 private:
 	float repeatPeriod;
 	QTime timer;
 	bool lastState;
 	bool outputState;
 	bool repeating;
+	bool released;
 };
 
 class Overlay
@@ -45,9 +48,11 @@ public:
 	void hide();
 	void onTimeoutPumpEvents();
 	void onSceneChanged();
+	bool checkMouse(vr::VROverlayIntersectionParams_t const& parms, Qt::MouseButtons buttons);
 	QGraphicsScene *m_pScene;
 	vr::VROverlayHandle_t m_ulOverlayHandle;
 private:
+	QGraphicsRectItem* m_cursor;
 	vr::HmdError m_eCompositorError;
 	vr::HmdError m_eOverlayError, m_eLastHmdError;
 	vr::Compositor_OverlaySettings m_overlaySettings;
@@ -68,6 +73,7 @@ private:
 	Qt::MouseButtons m_lastMouseButtons;
 	bool m_bManualMouseHandling;
 };
+class VRMenu;
 class OpenVR
 {
 public:
@@ -85,8 +91,13 @@ public:
 	const double distps = 10;
 	const double dragFactor = 20;
 private:
+	QGLView* q;
+	VRMenu* menu;
+	Overlay* menuOverlay;
+	void createMenu();
+	void processPad();
 	void updatePad(double elapsed);
-	unsigned int pick(GLView& v);
+	unsigned int pick();
 	Matrix4 ConvertSteamVRMatrixToMatrix4(const vr::HmdMatrix34_t &matPose);
 	Matrix4 GetCurrentViewProjectionMatrix(vr::Hmd_Eye nEye);
 	void RenderScene(GLView& v, vr::Hmd_Eye nEye);
