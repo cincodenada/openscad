@@ -169,7 +169,7 @@ void QGLView::paintGL(bool camera, bool cameraProjection)
 {
   GLView::paintGL(camera, cameraProjection);
 
-  if (statusLabel) {
+  if (statusLabel && camera) {
     Camera nc(cam);
     nc.gimbalDefaultTranslate();
 	const QString status = QString("%1 (%2x%3)")
