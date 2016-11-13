@@ -4,6 +4,68 @@
 
 [![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/openscad.png)](https://kiwiirc.com/client/irc.freenode.net/#openscad)
 
+# OpenSCAD VR
+
+This repository adds supports for OpenVR into OpenSCAD.
+This is still a work in progress.
+
+## Starting
+
+You need steam and steamVR installed for this to work. Tested on the CV oculus rift, but
+it should work with the vive too.
+
+
+You need to add `--enable-vr` to the openscad.exe command line. Simplest way is to create
+a shortcut to openscad.exe, edit its properties, and append ` --enable-vr` to the target.
+
+For transforms to work, your openscad source file must contain the following code:
+
+    module move(tx, ty, tz, rx, ry, rz, sx, sy, sz)
+    {
+        translate([tx, ty, tz])
+        rotate(rx, [1, 0, 0])
+        rotate(ry, [0, 1, 0])
+        rotate(rz, [0, 0, 1])
+        scale([sx, sy, sz])
+        children();
+    }
+
+## Gamepad controls
+
+### Move around
+
+The camera is set to orbit around a given point in space (default: origin).
+Use the left axis pad and L1/L2 to rotate the object.
+Use the right axis pad and R1/R2 to translate the focus point.
+Use the up/down buttons to change the distance between the camera and focus point.
+
+Note: rescaling is not implemented yet, and scaling is wrong: your objects will
+appear scaled by a factor of 1000 (1 milimeter -> 1 meter).
+
+### Selecting objects
+
+Clicking `X` while looking at something will select the primitive. It will appear red
+and axis will be drawn from it. You can change selected object by navigating the
+tree using the directional buttons: Left and Right select sibling nodes, Up and Down
+change depth in the tree.
+
+### Transforming objects.
+
+Holding `Y`, `A` or `B` while moving the left axis pad or L1/L2 will translate, rotate
+and scale (respectively) the selected object(s). Hold R1 to tie the 3 axis together.
+Hold L2 for a slower more precise operation.
+
+
+### Manipulating the tree (experimental).
+
+Press `A` and `B` to make an overlay menu appear (press `X` and `Y` to hide it).
+This menu has buttons to create new primitives in the tree, and to change the transform node type.
+
+Holding `X` will move currently selected object as a child of the object your HMD points toward.
+
+
+
+
 # What is OpenSCAD?
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=openscad&url=http://openscad.org&title=OpenSCAD&language=&tags=github&category=software)
 
