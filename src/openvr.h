@@ -133,6 +133,8 @@ private:
 	double target[3];
 	double distance;
 	double angles[3];
+	double scale;
+	double initialHeight;
 	// button state
 	Debouncer buttonL, buttonR, buttonU, buttonD, buttonX, buttonY;
 

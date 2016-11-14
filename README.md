@@ -1,8 +1,3 @@
-[![Travis CI](https://api.travis-ci.org/openscad/openscad.png)](https://travis-ci.org/openscad/openscad)
-[![Coverity Status](https://scan.coverity.com/projects/2510/badge.svg)](https://scan.coverity.com/projects/2510)
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/openscad/openscad/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
-[![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/openscad.png)](https://kiwiirc.com/client/irc.freenode.net/#openscad)
 
 # OpenSCAD VR
 
@@ -32,15 +27,25 @@ For transforms to work, your openscad source file must contain the following cod
 
 ## Gamepad controls
 
+### Base object height.
+
+Initially your openscad objects are drawn at 0 height, a.k.a. on the floor.
+To move them up to eye level, hold `A` and `X` together while looking straight forward.
+You can further adjust the height by holding `B` and `Y` and fiddling the Up/Down
+left axis pad.
+
+### Scaling
+
+Your objects are drawn at the correct scale by default (that is, one unit in openscad equals
+one milimeter).
+Use the Left/Right directional buttons to scale the scene Down/Up.
+
 ### Move around
 
 The camera is set to orbit around a given point in space (default: origin).
 Use the left axis pad and L1/L2 to rotate the object.
 Use the right axis pad and R1/R2 to translate the focus point.
 Use the up/down buttons to change the distance between the camera and focus point.
-
-Note: rescaling is not implemented yet, and scaling is wrong: your objects will
-appear scaled by a factor of 1000 (1 milimeter -> 1 meter).
 
 ### Selecting objects
 
@@ -49,11 +54,14 @@ and axis will be drawn from it. You can change selected object by navigating the
 tree using the directional buttons: Left and Right select sibling nodes, Up and Down
 change depth in the tree.
 
+Note: to restore directional buttons to scale/distance control, hit `X` by looking at
+empty space.
+
 ### Transforming objects.
 
-Holding `Y`, `A` or `B` while moving the left axis pad or L1/L2 will translate, rotate
+Holding `Y`, `B` or `A` while moving the left axis pad or L1/L2 will translate, rotate
 and scale (respectively) the selected object(s). Hold R1 to tie the 3 axis together.
-Hold L2 for a slower more precise operation.
+Hold R2 for a slower more precise operation.
 
 
 ### Manipulating the tree (experimental).
@@ -65,6 +73,13 @@ Holding `X` will move currently selected object as a child of the object your HM
 
 
 
+
+
+[![Travis CI](https://api.travis-ci.org/openscad/openscad.png)](https://travis-ci.org/openscad/openscad)
+[![Coverity Status](https://scan.coverity.com/projects/2510/badge.svg)](https://scan.coverity.com/projects/2510)
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/openscad/openscad/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
+[![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/openscad.png)](https://kiwiirc.com/client/irc.freenode.net/#openscad)
 
 # What is OpenSCAD?
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=openscad&url=http://openscad.org&title=OpenSCAD&language=&tags=github&category=software)

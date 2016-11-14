@@ -57,9 +57,11 @@ VRMenu::VRMenu()
 OpenVR::OpenVR()
 	: target{0,0,0}
 	, angles{0,0,0}
+	, scale(0.001)
+	, initialHeight(0)
 {
 	m_pHMD = NULL;
-	distance = 0;
+	distance = 0.1;
 	overlayEvents.start();
 }
 
@@ -81,6 +83,9 @@ void OpenVR::initialize()
 	m_mat4ProjectionRight = GetHMDMatrixProjectionEye(vr::Eye_Right);
 	m_mat4eyePosLeft = GetHMDMatrixPoseEye(vr::Eye_Left);
 	m_mat4eyePosRight = GetHMDMatrixPoseEye(vr::Eye_Right);
+	UpdateHMDMatrixPose();
+	initialHeight = (m_mat4HMDPose * Vector4(0, 0, 0, 1))[1];
+	UpdateHMDMatrixPose();
 	time.start();
 }
 
@@ -142,7 +147,9 @@ void OpenVR::RenderScene(GLView& v, vr::Hmd_Eye nEye)
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(GetCurrentViewProjectionMatrix(nEye).get());
+	glTranslated(0, -initialHeight, 0);
 	glMatrixMode(GL_MODELVIEW);
+    glScaled(scale, scale, scale);
 	glTranslated(distance, 0, 0);
 	glRotated(angles[0], 1, 0, 0);
 	glRotated(angles[1], 0, 1, 0);
@@ -262,6 +269,7 @@ void OpenVR::UpdateHMDMatrixPose()
 	if (m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid)
 	{
 		m_mat4HMDPose = m_rmat4DevicePose[vr::k_unTrackedDeviceIndex_Hmd].invert();
+		//m_mat4HMDPose.translate(0, -initialHeight, 0);
 	}
 }
 
@@ -284,7 +292,7 @@ Matrix4 OpenVR::GetHMDMatrixProjectionEye(vr::Hmd_Eye nEye)
 	if (!m_pHMD)
 		return Matrix4();
 
-	vr::HmdMatrix44_t mat = m_pHMD->GetProjectionMatrix(nEye, 0.3, 300.0, vr::API_OpenGL);
+	vr::HmdMatrix44_t mat = m_pHMD->GetProjectionMatrix(nEye, 0.001, 3.0, vr::API_OpenGL);
 
 	return Matrix4(
 		mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[3][0],
@@ -330,6 +338,10 @@ void OpenVR::updatePad(double elapsed)
 	{
 		distance += gamePad.buttonUp() * elapsed * distps;
 		distance -= gamePad.buttonDown() * elapsed * distps;
+		if (gamePad.buttonLeft())
+			scale *= 0.98;
+		if (gamePad.buttonRight())
+			scale *= 1.02;
 	}
 }
 
@@ -344,12 +356,20 @@ void OpenVR::processPad()
 	buttonY.feed(gamePad.buttonY());
 	if (gamePad.buttonX() && gamePad.buttonY())
 		menuOverlay->hide();
-	if (gamePad.buttonA() && gamePad.buttonB())
+	else if (gamePad.buttonA() && gamePad.buttonB())
 	{
 		menuOverlay->show();
 		menuOverlay->onSceneChanged();
 	}
-	if (buttonX.isReleased())
+	else if (gamePad.buttonA() && gamePad.buttonX())
+	{
+		initialHeight = (m_mat4HMDPose * Vector4(0, 0, 0, 1))[1];
+	}
+	else if (gamePad.buttonB() && gamePad.buttonY())
+	{
+		initialHeight += gamePad.axisLeftY() * elapsed * tps;
+	}
+	else if (buttonX.isReleased())
 	{
 		unsigned int id = pick();
 
