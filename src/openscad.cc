@@ -44,7 +44,9 @@
 #include "FontCache.h"
 #include "OffscreenView.h"
 #include "GeometryEvaluator.h"
+#ifdef OPENVR
 #include "openvr.h"
+#endif
 
 #include <string>
 #include <vector>
@@ -760,6 +762,7 @@ int gui(vector<string> &inputFiles, const fs::path &original_path, int argc, cha
 
 	app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
 	int rc = 0;
+#ifdef OPENVR
 	if (enable_vr)
 	{
 		OpenVR vr;
@@ -767,6 +770,7 @@ int gui(vector<string> &inputFiles, const fs::path &original_path, int argc, cha
 		vr.mainLoop(*mainwin->qglview);
 	}
 	else
+#endif
 		rc = app.exec();
 	for(auto &mainw : scadApp->windowManager.getWindows()) delete mainw;
 	return rc;

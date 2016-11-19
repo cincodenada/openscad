@@ -117,7 +117,7 @@ mingw* {
 }
 
 CONFIG += qt
-QT += widgets concurrent
+QT += widgets concurrent gamepad opengl
 
 netbsd* {
    QMAKE_LFLAGS += -L/usr/X11R7/lib
@@ -189,6 +189,11 @@ CONFIG += gettext
 # Make experimental features available
 experimental {
   DEFINES += ENABLE_EXPERIMENTAL
+}
+
+openvr {
+  DEFINES += OPENVR
+  SOURCES += src/openvr.cc
 }
 
 nogui {
