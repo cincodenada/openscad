@@ -476,7 +476,7 @@ void OpenVR::mainLoop(GLView& v)
 			intersect.vDirection.v[0] = d.x;
 			intersect.vDirection.v[1] = d.y;
 			intersect.vDirection.v[2] = d.z;
-			intersect.eOrigin = vr::TrackingUniverseSeated;
+			intersect.eOrigin = vr::TrackingUniverseRawAndUncalibrated; // vr::TrackingUniverseSeated;
 			bool overlayHit = false;
 			Qt::MouseButtons buttons;
 			if (gamePad.buttonX())
