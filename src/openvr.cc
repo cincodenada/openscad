@@ -2,7 +2,7 @@
 #include "QGLView.h"
 #include "OpenCSGRenderer.h"
 #include <QApplication>
-#include <QOpenglPaintDevice>
+#include <QOpenGLPaintDevice>
 #include <QGraphicsSceneMouseEvent>
 #include <QOpenGLWidget>
 #include <set>

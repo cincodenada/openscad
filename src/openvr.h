@@ -1,12 +1,12 @@
 #pragma once
 #include <openvr.h>
 #include "QGLView.h"
-#include <QGamePad>
+#include <QGamepad>
 #include <QTime>
 #include <QTimer>
 #include <QOpenGLContext>
 #include <QGLFormat>
-#include <QOpenGLFrameBufferObject>
+#include <QOpenGLFramebufferObject>
 #include <QOffscreenSurface>
 #include <QGraphicsScene>
 #include "renderer.h"
