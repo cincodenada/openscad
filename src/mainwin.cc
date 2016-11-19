@@ -66,7 +66,7 @@
 #ifdef OPENSCAD_UPDATER
 #include "AutoUpdater.h"
 #endif
-
+#include "astrenderer.h"
 #include <QMenu>
 #include <QTime>
 #include <QMenuBar>
@@ -584,6 +584,8 @@ MainWindow::MainWindow(const QString &filename)
 
 	setAcceptDrops(true);
 	clearCurrentOutput();
+	this->astRenderer = new AstRenderer(nullptr, qglview);
+	this->astRenderer->makeWindow();
 }
 
 void MainWindow::initActionIcon(QAction *action, const char *darkResource, const char *lightResource)
@@ -1056,6 +1058,7 @@ void MainWindow::compileEnded()
 	if (GuiLocker::isLocked())
 	  GuiLocker::unlock();
 	if (designActionAutoReload->isChecked()) autoReloadTimer->start();
+	this->astRenderer->update(this->root_node);
 }
 
 void MainWindow::instantiateRoot()
@@ -1244,6 +1247,8 @@ void MainWindow::compileCSG(bool procevents, bool quiet)
 	int s = this->renderingTime.elapsed() / 1000;
 	PRINTB("Total rendering time: %d hours, %d minutes, %d seconds", (s / (60*60)) % ((s / 60) % 60) % (s % 60));
 	if (procevents) QApplication::processEvents();
+	if (astRenderer)
+	  astRenderer->update(root_node);
 }
 
 void MainWindow::actionNew()
@@ -3066,6 +3071,41 @@ void MainWindow::insertObject(int sibling_id, Primitive what, bool centered)
 	editor->setSelection(QRect(beg, beg));
 }
 
+void MainWindow::modifyObject(int id, std::string const& what)
+{
+  std::vector<AbstractNode*> stack;
+	AbstractNode* node = find_by_id(absolute_root_node, id, stack);
+	if (!node || !node->modinst)
+	  return;
+	auto loc = node->modinst->getLocation();
+	QPoint beg(loc.first_column - 1, loc.first_line - 1);
+	QPoint end(loc.last_column - 1, loc.last_line - 1);
+	editor->setSelection(QRect(beg, end));
+	QString content = editor->selectedText();
+	std::cerr << "CONTENT: " << content.toStdString() << std::endl;
+	const char* words[] = {"union", "intersection", "difference", "cube", "sphere", "cylinder"};
+	int bestpos = 1000;
+	int bestw = -1;
+	for (int i=0; i<6; ++i)
+	{
+	  auto p = content.indexOf(words[i]);
+	  if (p >= 0 && p < bestpos)
+	  {
+	    bestpos = p;
+	    bestw = i;
+	  }
+	}
+	if (bestw == -1)
+	  return;
+	content.replace(bestpos, strlen(words[bestw]), what.c_str());
+	editor->replaceSelectedText(content);
+	std::cerr << "invoke compile" << std::endl;
+	QMetaObject::invokeMethod(this, "compile", Qt::QueuedConnection,
+	  Q_ARG(bool, false),
+	  Q_ARG(bool, false),
+	  Q_ARG(bool, false));
+}
+
 static const bool bFalse = false;
 void MainWindow::dragObject(int id, int axis, double dx, double dy, int buttons, int modifiers)
 {
@@ -3172,6 +3212,7 @@ void MainWindow::pickedObject(int id, int prev_id, int modifiers)
 void MainWindow::glviewKeyPress(int key, Qt::KeyboardModifiers mods)
 {
   std::cerr << "key " << key << " " << (int)mods << std::endl;
+  bool shift = mods & Qt::ShiftModifier;
   bool skip = true;
   if (key == Qt::Key_Up)
     changeSelection(TreeMove::parent, skip);
@@ -3182,17 +3223,51 @@ void MainWindow::glviewKeyPress(int key, Qt::KeyboardModifiers mods)
   else if (key == Qt::Key_Right)
     changeSelection(TreeMove::nextSibling, skip);
   else if (key == Qt::Key_S)
-    insertObject(qglview->last_pick_id, Primitive::sphere, true);
+    if (shift)
+      modifyObject(qglview->last_pick_id, "sphere");
+    else
+      insertObject(qglview->last_pick_id, Primitive::sphere, true);
   else if (key == Qt::Key_C)
-    insertObject(qglview->last_pick_id, Primitive::cube, true);
+    if (shift)
+      modifyObject(qglview->last_pick_id, "cube");
+    else
+      insertObject(qglview->last_pick_id, Primitive::cube, true);
   else if (key == Qt::Key_Y)
-    insertObject(qglview->last_pick_id, Primitive::cylinder, true);
+    if (shift)
+      modifyObject(qglview->last_pick_id, "cylinder");
+    else
+      insertObject(qglview->last_pick_id, Primitive::cylinder, true);
   else if (key == Qt::Key_U)
-    insertCSGOp(qglview->last_pick_id, "union");
+    if (shift)
+      modifyObject(qglview->last_pick_id, "union");
+    else
+      insertCSGOp(qglview->last_pick_id, "union");
   else if (key == Qt::Key_I)
-    insertCSGOp(qglview->last_pick_id, "intersection");
+    if (shift)
+      modifyObject(qglview->last_pick_id, "intersection");
+    else
+      insertCSGOp(qglview->last_pick_id, "intersection");
   else if (key == Qt::Key_D)
-    insertCSGOp(qglview->last_pick_id, "difference");
+    if (shift)
+      modifyObject(qglview->last_pick_id, "difference");
+    else
+      insertCSGOp(qglview->last_pick_id, "difference");
+  else if (key == Qt::Key_R)
+  {
+    int nr = qglview->last_pick_id;
+    std::vector<AbstractNode*> stack;
+    AbstractNode* n = find_by_id(absolute_root_node, nr, stack);
+    if (n)
+    {
+      root_node = n;
+      csgRender();
+    }
+  }
+  else if (key == Qt::Key_Escape)
+  {
+    root_node = absolute_root_node;
+    csgRender();
+  }
 }
 
 static bool should_skip(AbstractNode* target)

@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="..\OpenVR\samples\shared\Matrices.cpp" />
     <ClCompile Include="glib_stub.cpp" />
+    <ClCompile Include="src\astrenderer.cc" />
     <ClCompile Include="src\AutoUpdater.cc" />
     <ClCompile Include="src\CGALCache.cc" />
     <ClCompile Include="src\CGALRenderer.cc" />
@@ -307,6 +308,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">objects\moc_AutoUpdater.cpp;%(Outputs)</Outputs>
     </CustomBuild>
     <ClInclude Include="..\OpenVR\samples\shared\Matrices.h" />
+    <ClInclude Include="src\astrenderer.h" />
     <ClInclude Include="src\CGALCache.h" />
     <ClInclude Include="src\CGALRenderer.h" />
     <ClInclude Include="src\CGAL_Nef3_workaround.h" />

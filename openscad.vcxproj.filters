@@ -444,6 +444,9 @@
     <ClCompile Include="..\OpenVR\samples\shared\Matrices.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\astrenderer.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\AboutDialog.h">
@@ -1238,6 +1241,9 @@
     </ClInclude>
     <ClInclude Include="..\OpenVR\samples\shared\Matrices.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\astrenderer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

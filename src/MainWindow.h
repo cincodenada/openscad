@@ -24,13 +24,14 @@ enum class Primitive
   cube,
 };
 
+class AstRenderer;
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
 	Q_OBJECT
 
 public:
 	QString fileName;
-
+	AstRenderer* astRenderer;
 	class Preferences *prefs;
 
 	QTimer *animate_timer;
@@ -260,6 +261,7 @@ public slots:
 	void glviewKeyPress(int key, Qt::KeyboardModifiers mods);
 	void insertObject(int sibling_id, Primitive what, bool centered);
 	void insertCSGOp(int id, std::string const& op);
+	void modifyObject(int id, std::string const& what);
 	void moveNode(int node_id, int target_id, bool before);
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);

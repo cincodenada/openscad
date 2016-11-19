@@ -441,7 +441,8 @@ SOURCES += src/version_check.cc \
            src/FontListTableView.cc \
            src/launchingscreen.cc \
            src/legacyeditor.cc \
-           src/LibraryInfoDialog.cc
+           src/LibraryInfoDialog.cc \
+           src/astrenderer.cc
 
 # ClipperLib
 SOURCES += src/polyclipping/clipper.cpp
