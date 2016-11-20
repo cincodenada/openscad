@@ -16,6 +16,9 @@ public:
 	AstRenderer(QGraphicsScene* scene = nullptr, QGLView* view = nullptr);
 	void update(AbstractNode* root);
 	void makeWindow();
+	void change(int idx, std::string const& what);
+	void insert(int where, std::string const& what);
+	void setRoot(int idx);
 private:
   int scalex;
   int scaley;

@@ -19,6 +19,81 @@
 #include "QGLView.h"
 
 
+class GButton: public QGraphicsTextItem
+{
+public:
+  GButton(QString label, std::function<void()> onclick = {})
+  : onclick(onclick)
+  {
+    setPlainText(label);
+  }
+protected:
+  void mousePressEvent(QGraphicsSceneMouseEvent *) override
+  {
+    onclick();
+  }
+  std::function<void()> onclick;
+};
+
+class GMenu: public QGraphicsItemGroup
+{
+public:
+  GMenu(QGraphicsScene* scene)
+  : lastInserted(nullptr)
+  , scene(scene)
+  {
+    setHandlesChildEvents(false);
+  }
+  typedef std::function<void()> OnClick;
+  void wrap(OnClick onclick)
+  {
+    if (onclick)
+      onclick();
+    scene->removeItem(this);
+    scene->setSceneRect(scene->itemsBoundingRect());
+    delete this;
+  }
+  GMenu& addButton(QString label, OnClick onclick = OnClick())
+  {
+    auto b = new GButton(label, [this, onclick] { this->wrap(onclick);});
+    return insert(b);
+  }
+  GMenu& addGroup(QString label)
+  {
+    auto b = new QGraphicsTextItem(label);
+    return insert(b);
+  }
+  GMenu& insert(QGraphicsItem* item)
+  {
+    auto li = lastInserted;
+    lastInserted = item;
+    addToGroup(item);
+    if (li)
+    {
+      QRectF lr = li->sceneBoundingRect();
+      //QRectF ir = item->sceneBoundingRect();
+      if (dynamic_cast<GButton*>(li) && dynamic_cast<GButton*>(item))
+      { // insert at left
+        item->setPos(lr.right() + 20, lr.top());
+      }
+      else
+      { // insert bellow
+        item->setPos(0, lr.bottom() + 20);
+      }
+    }
+    return *this;
+  }
+  void show()
+  {
+    setPos(-1000, -1000);
+    scene->addItem(this);
+    scene->setSceneRect(this->sceneBoundingRect());
+  }
+
+  QGraphicsItem* lastInserted;
+  QGraphicsScene* scene;
+};
+
 class GText: public QGraphicsTextItem
 {
 public:
@@ -71,6 +146,37 @@ protected:
   }
   void mousePressEvent(QGraphicsSceneMouseEvent *e) override
   {
+    if (e->button() == Qt::MouseButton::RightButton)
+    {
+      auto name = toPlainText();
+      bool prim = (name == "cube" || name == "cylind" || name == "sphere");
+      bool constr = (name == "union" || name == "inters" || name == "differ");
+      auto m = new GMenu(owner.scene);
+      if (prim)
+        m->addGroup("Change into")
+        .addButton("cube", [this] { owner.change(idx, "cube");})
+        .addButton("sphere", [this] { owner.change(idx, "sphere");})
+        .addButton("cylinder", [this] { owner.change(idx, "cylinder");});
+      if (constr)
+        m->addGroup("Change into")
+        .addButton("union", [this] { owner.change(idx, "union");})
+        .addButton("intersection", [this] { owner.change(idx, "intersection");})
+        .addButton("difference", [this] { owner.change(idx, "difference");});
+      if (constr)
+        m->addGroup("Insert")
+        .addButton("cube", [this] { owner.insert(idx, "cube");})
+        .addButton("sphere", [this] { owner.insert(idx, "sphere");})
+        .addButton("cylinder", [this] { owner.insert(idx, "cylinder");})
+        .addButton("union", [this] { owner.insert(idx, "union");})
+        .addButton("intersection", [this] { owner.insert(idx, "intersection");})
+        .addButton("difference", [this] { owner.insert(idx, "difference");});
+      m->addGroup("")
+        .addButton("set root", [this] { owner.setRoot(idx);})
+        .addButton("reset root", [this] { owner.setRoot(-1);})
+        .addButton("cancel");
+      m->show();
+      return;
+    }
     if (owner.view)
     {
       if (e->modifiers() & Qt::AltModifier)
@@ -130,36 +236,41 @@ protected:
   AstRenderer& owner;
 };
 
-std::string ast_to_dot(AbstractNode* root)
+std::string node_string(AbstractNode* n)
 {
+  std::string res = n->name();
+  res = res.substr(0, 6);
+  return res;
+}
+
+std::string ast_to_dot(AbstractNode* root, std::vector<std::pair<int, int>>& links)
+{
+  links.clear();
 	std::string res;
 	res = "digraph G {";
-	std::function<void(AbstractNode*)> process = [&res,&process](AbstractNode* n) {
+	std::function<void(AbstractNode*, AbstractNode*)> process =
+	[&res,&process,&links](AbstractNode* n, AbstractNode* reparent) {
+	  bool pTransf = n->getChildren().size() < 2 &&
+	    (node_string(n) == "transf" || node_string(n) == "group");
 		for (auto* c : n->getChildren())
 		{
-		  res += std::to_string(n->idx) + "[label=\"aaaaaa\"];\n";
-			process(c);
-			res += std::to_string(n->idx) + " -> " + std::to_string(c->idx) + ";\n";
+		  if (pTransf && (node_string(c) == "transf" || node_string(c) == "group"))
+		  {
+		    process(c, reparent);
+		  }
+		  else
+		  {
+		    process(c, c);
+		    res += std::to_string(reparent->idx) + " -> " + std::to_string(c->idx) + ";\n";
+		    links.emplace_back(reparent->idx, c->idx);
+		  }
 	  }
 	};
-	process(root);
+	process(root, root);
 	res += "}\n";
 	return res;
 }
 
-std::vector<std::pair<int, int>> ast_links(AbstractNode* root)
-{
-  std::vector<std::pair<int, int>> res;
-  std::function<void(AbstractNode*)> process = [&res, &process](AbstractNode* n) {
-    for (auto* c : n->getChildren())
-    {
-      res.emplace_back(n->idx, c->idx);
-      process(c);
-    }
-  };
-  process(root);
-  return res;
-}
 
 std::unordered_map<int, AbstractNode*> ast_index(AbstractNode* root)
 {
@@ -176,14 +287,14 @@ std::unordered_map<int, AbstractNode*> ast_index(AbstractNode* root)
 typedef std::pair<double, double> NodePosition;
 typedef std::unordered_map<int, NodePosition> NodePositions;
 
-NodePositions ast_layout(AbstractNode* root)
+NodePositions ast_layout(AbstractNode* root, std::vector<std::pair<int, int>>& links)
 {
-	auto dotstring = ast_to_dot(root);
+	auto dotstring = ast_to_dot(root, links);
 	QTemporaryFile tmp;
 	tmp.open();
 	tmp.write(dotstring.c_str());
 	tmp.close();
-	
+
 	QStringList arguments;
 	arguments.append("-Tplain");
 	arguments.append(tmp.fileName());
@@ -259,12 +370,6 @@ std::pair<int, int> compute_scale(NodePositions const& np, int scalex, int scale
   return std::make_pair(scalex * ifactor / mindx, scaley * ifactor / mindy);
 }
 
-std::string node_string(AbstractNode* n)
-{
-  std::string res = n->name();
-  res = res.substr(0, 6);
-  return res;
-}
 
 
 
@@ -281,8 +386,9 @@ AstRenderer::AstRenderer(QGraphicsScene* scene, QGLView* view)
 
 void AstRenderer::update(AbstractNode* root)
 {
+  std::vector<std::pair<int, int>> nl;
 	std::cerr << "update " << !!root << std::endl;
-	auto np = ast_layout(root);
+	auto np = ast_layout(root, nl);
 	auto scale = compute_scale(np, scalex, scaley);
 	auto ai = ast_index(root);
 	std::set<int> mark;
@@ -321,7 +427,6 @@ void AstRenderer::update(AbstractNode* root)
 			++it;
 	}
 	// now lines
-	auto nl = ast_links(root);
 	std::set<int> markl;
 	for (auto& l: nl)
 	{
@@ -356,11 +461,37 @@ void AstRenderer::update(AbstractNode* root)
 	    ++it;
 	}
 	scene->setSceneRect(scene->itemsBoundingRect());
-	if (gview)
-		gview->setSceneRect(scene->itemsBoundingRect());
+	//if (gview)
+	//		gview->setSceneRect(scene->itemsBoundingRect());
 	gview->update();
 }
+static std::unordered_map<std::string, int> kindToKey {
+  {"union", Qt::Key_U},
+  {"intersection", Qt::Key_I},
+  {"difference", Qt::Key_D},
+  {"cube", Qt::Key_C},
+  {"sphere", Qt::Key_S},
+  {"cylinder", Qt::Key_Y}
+};
 
+void AstRenderer::change(int idx, std::string const& what)
+{
+  view->last_pick_id = idx;
+  emit view->keyPress(kindToKey.at(what), Qt::ShiftModifier);
+}
+
+void AstRenderer::insert(int idx, std::string const& what)
+{
+  view->last_pick_id = idx;
+  emit view->keyPress(kindToKey.at(what), 0);
+}
+
+void AstRenderer::setRoot(int idx)
+{
+  if (idx != -1)
+    view->last_pick_id = idx;
+  emit view->keyPress(idx == -1 ? Qt::Key_Escape : Qt::Key_R, 0);
+}
 void AstRenderer::makeWindow()
 {
 	win = new QMainWindow();
