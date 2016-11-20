@@ -969,7 +969,11 @@ void MainWindow::compile(bool reload, bool forcedone, bool dont_signal)
 			}
 		}
 	}
-
+	if (designActionCanonicalSource->isChecked() && root_module)
+	{
+	  auto text = root_module->dump("", "");
+	  editor->setPlainText(text.c_str());
+	}
 	if (!dont_signal)
 	{
 	  std::cerr << "compiledone() "<< std::endl;
